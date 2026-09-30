@@ -1,0 +1,323 @@
+{
+  "engagement_questions": {
+    "finale": [
+      "Algú més l'ha acabada? Què us ha semblat el desenllaç? (Zero espòilers per aquí 👇)",
+      "Quin viatge aquesta temporada. Quina nota li posaríeu vosaltres? 👇",
+      "Opinions del final? Accepto recomanacions per omplir el buit que deixa 🍿",
+      "Ha complert les expectatives aquest final de temporada o n'esperàveu més? 👇",
+      "Quines sensacions us ha deixat el tancament de temporada? Us llegeixo 👇"
+    ],
+    "top_movie": [
+      "Feia temps que una pel·lícula no em deixava aquesta sensació. L'heu vista? 👇",
+      "Cinema en majúscules. Alguna recomanació semblant que hagi de veure sí o sí? 🎬",
+      "Què us ha semblat als que l'heu vista? Mereix tanta fama? 👇",
+      "Directa a la meva llista d'imprescindibles. Quina és la vostra preferida del gènere? 🍿"
+    ],
+    "weekly": [
+      "I vosaltres, com heu tancat la setmana serèfila? Alguna joia a destacar? 🍿",
+      "Què ha estat el millor que heu vist aquests últims 7 dies? 👇",
+      "Setmana enllestida. Què teniu a la cua per començar dilluns? 📺",
+      "Coincidim amb alguna sèrie aquesta setmana? Expliqueu-m'ho als comentaris 👇"
+    ],
+    "monthly": [
+      "Quin balanç feu del vostre mes serèfil? Quina ha estat la vostra sorpresa del mes? 🍂",
+      "Tancant el mes amb el catàleg al dia. Quines estrenes del mes vinent teniu al radar? 👇",
+      "Quantes sèries o pel·lis han caigut al vostre compte aquest mes? Us llegeixo 👇"
+    ],
+    "streak": [
+      "Quina és la vostra ratxa més gran de dies mirant sèries sense descans? 📺🔥",
+      "La constància abans de tot... sou de capítol diari o més de marató de cap de setmana? 👇",
+      "Seguim amb el comptador en marxa. Qui més manté una ratxa activa per aquí? ⚡"
+    ]
+  },
+  "shows": {
+    "finale": [
+      "🏆 Final de temporada: {show_title} (T{season_num})",
+      "📺 Temporada {season_num} completada de: {show_title}",
+      "🎬 Enllestida la temporada {season_num} de: {show_title}",
+      "✨ I amb això... final de la temporada {season_num} de: {show_title}",
+      "🏁 Temporada {season_num} ratllada de la llista: {show_title}",
+      "🍿 Arribem al desenllaç de la temporada {season_num} de: {show_title}",
+      "📺 Temporada {season_num} vista i sentenciada: {show_title}",
+      "🔚 Gran comiat per a la temporada {season_num} de: {show_title}",
+      "🎯 Missió complerta amb la temporada {season_num} de: {show_title}",
+      "👏 Temporada {season_num} enllestida, a esperar la següent: {show_title}",
+      "📦 Tancant la temporada {season_num} de: {show_title}",
+      "💥 Brutal tancament de temporada per a: {show_title} (T{season_num})"
+    ],
+    "caught_up": {
+      "marathon_4": [
+        "🚨 Marató seriosa per posar-me al dia amb: {show_title} ({range_label})",
+        "🔥 Sessió maratoniana fins a atrapar l'últim emès de: {show_title} ({range_label})",
+        "📺 Al dia amb l'emissió després d'una bona marató de: {show_title} ({range_label})",
+        "🍿 Mode marató activat per quedar al dia amb: {show_title} ({range_label})"
+      ],
+      "triple_3": [
+        "🍿 Triplet d'episodis i al dia amb: {show_title} ({range_label})",
+        "🔥 Tres d'una tirada per atrapar l'emissió de: {show_title} ({range_label})",
+        "✨ Posat al dia amb l'emissió de: {show_title} ({range_label})",
+        "📺 Marató exprés per posar-me al dia amb: {show_title} ({range_label})"
+      ],
+      "double_2": [
+        "✌️ Doble sessió per posar-me al dia amb: {show_title} ({range_label})",
+        "🎬 Dos d'una tirada i al dia amb: {show_title} ({range_label})",
+        "🍿 Doblet per atrapar l'emissió de: {show_title} ({range_label})",
+        "✨ Posat al dia amb l'últim capítol emès de: {show_title} ({range_label})"
+      ],
+      "single_1": [
+        "📺 Al dia amb l'emissió de: {show_title} ({range_label})",
+        "✨ Posat al dia amb l'últim capítol emès de: {show_title} ({range_label})",
+        "👀 Al dia amb: {show_title} ({range_label}). A esperar el següent!",
+        "🍿 Seguint el ritme d'emissió: {show_title} ({range_label})",
+        "⚡ Al dia amb les emissions setmanals de: {show_title} ({range_label})",
+        "🛋️ Vist l'últim capítol disponible de: {show_title} ({range_label})",
+        "🎬 Seguint al dia la temporada {season_num} de: {show_title} ({range_label})",
+        "📺 Al dia amb el més recent de: {show_title} ({range_label})",
+        "👀 Enganxat al ritme d'emissió setmanal: {show_title} ({range_label})",
+        "🍿 Tot vist fins a la data a: {show_title} ({range_label})",
+        "✨ Últim capítol emès enllestit: {show_title} ({range_label})",
+        "🛋️ Seguint l'emissió al dia de: {show_title} ({range_label})",
+        "🎯 Al dia amb l'últim capítol de: {show_title} ({range_label})",
+        "🍿 Posant-me al dia amb l'últim de: {show_title} ({range_label})"
+      ]
+    },
+    "backlog_rescue": [
+      "🕰️ Rescat del bagul dels records: després de més de {months} mesos en pausa, reprenc: {show_title} ({range_label})",
+      "📼 Desempolsant sèries pendents: torno a la càrrega amb: {show_title} després de {years} anys sense tocar-la.",
+      "🕸️ Treient les telaranyes a: {show_title} ({range_label}). A veure si recordo qui era el dolent...",
+      "⏳ Mai és tard si la sèrie és bona: reprenent {show_title} després de {months} mesos d'aturada.",
+      "📦 Rescatant del backlog una de les que tenia pendents: {show_title} ({range_label})"
+    ],
+    "volume": {
+      "mega_4": [
+        "🚨 Marató seriosa: {show_title} ({range_label})",
+        "🛋️ Vaig dir «un capítol i ho deixo» fa 4 episodis...: {show_title} ({range_label})",
+        "🔥 He perdut la noció del temps devorant: {show_title} ({range_label})",
+        "🍿 Mega-marató en tota regla de: {show_title} ({range_label})",
+        "⚡ Quan el botó de 'Següent episodi' mana a la teva vida: {show_title} ({range_label})",
+        "📺 Sessió de les que fan època amb: {show_title} ({range_label})",
+        "🏆 Marató monumental per avançar a: {show_title} ({range_label})"
+      ],
+      "triple_3": [
+        "🍿 Marató sense fre de: {show_title} ({range_label})",
+        "📺 Mode marató activat: {show_title} ({range_label})",
+        "🔥 Sessió intensiva devorant: {show_title} ({range_label})",
+        "🛋️ Se me n'ha anat de les mans la marató de: {show_title} ({range_label})",
+        "⚡ Enllaçant capítols sense pietat: {show_title} ({range_label})",
+        "🍿 Quan una sèrie t'atrapa no hi ha escapatòria: {show_title} ({range_label})",
+        "🎬 Tres d'una tirada gairebé sense respirar: {show_title} ({range_label})",
+        "✨ Bona dosi en tanda triple de: {show_title} ({range_label})"
+      ],
+      "double_2": [
+        "✌️ Doble ració de: {show_title} ({range_label})",
+        "🎬 Dos d'una tirada per entrar en calor: {show_title} ({range_label})",
+        "🍿 Sessió doble ben despatxada: {show_title} ({range_label})",
+        "📺 Tàndem d'episodis amb: {show_title} ({range_label})",
+        "🛋️ El primer ha sabut a poc, així que n'han caigut dos de: {show_title} ({range_label})",
+        "✨ Dos capitolets seguits de: {show_title} ({range_label})"
+      ]
+    },
+    "season_milestones": {
+      "show_premiere": [
+        "✨ Començant sèrie nova: {show_title} ({range_label})",
+        "📺 Donant-li una oportunitat a: {show_title} ({range_label})",
+        "👀 Engegant amb: {show_title} ({range_label})",
+        "🍿 Primers passos a: {show_title} ({range_label})",
+        "🆕 Nou descobriment serèfil: {show_title} ({range_label})",
+        "🎬 A veure com es comporta el pilot de: {show_title} ({range_label})",
+        "✨ Sumant una sèrie més al catàleg: {show_title} ({range_label})",
+        "🚀 Enlairant-me amb: {show_title} ({range_label})",
+        "🔍 Veurem si m'enganxa: {show_title} ({range_label})",
+        "🛋️ Iniciant un nou viatge serèfil amb: {show_title} ({range_label})"
+      ],
+      "season_premiere": [
+        "✨ Engegant la temporada {season_num} de: {show_title} ({range_label})",
+        "📺 Començant la temporada {season_num} de: {show_title} ({range_label})",
+        "👀 Tornant a l'univers de: {show_title} ({range_label})",
+        "🍿 Moltes ganes acumulades de tornar a: {show_title} ({range_label})",
+        "🎬 Temporada {season_num} en marxa: {show_title} ({range_label})",
+        "🔄 Reprenent on ho vam deixar amb: {show_title} ({range_label})",
+        "🍿 Quines ganes li tenia a aquesta temporada {season_num} de: {show_title} ({range_label})",
+        "📺 De tornada a la càrrega amb la temporada {season_num} de: {show_title} ({range_label})"
+      ],
+      "penultimate": [
+        "⚡ Tensió màxima a les portes del final de: {show_title} ({range_label})",
+        "👀 A un sol capítol d'acabar la temporada de: {show_title} ({range_label})",
+        "🍿 Penúltim capítol vist, la cosa crema a: {show_title} ({range_label})",
+        "🔥 Tot a punt per a la traca final de: {show_title} ({range_label})",
+        "😱 Deixant-ho tot preparat per al desenllaç de: {show_title} ({range_label})",
+        "🎬 No sé si estic preparat per al final de: {show_title} ({range_label})"
+      ],
+      "final_stretch": [
+        "🔥 Recta final de la temporada {season_num} de: {show_title} ({range_label})",
+        "👀 Fa olor de desenllaç a: {show_title} ({range_label})",
+        "🍿 Ja gairebé la tinc enllestida: {show_title} ({range_label})",
+        "⚡ Tram definitiu de la temporada {season_num} de: {show_title} ({range_label})",
+        "🎯 Els caps comencen a lligar-se a: {show_title} ({range_label})"
+      ],
+      "mid_season": [
+        "🎯 Just a l'equador de la temporada {season_num} de: {show_title} ({range_label})",
+        "⚖️ Meitat de temporada superada a: {show_title} ({range_label})",
+        "📈 Passant l'equador amb bon ritme: {show_title} ({range_label})",
+        "🎬 Temporada {season_num} creuant la seva meitat: {show_title} ({range_label})"
+      ]
+    },
+    "time_of_day": {
+      "night": [
+        "🌙 A aquestes hores i jo devorant: {show_title} ({range_label})",
+        "🦉 Insomni ben aprofitat amb: {show_title} ({range_label})",
+        "✨ Un capítol més i a dormir (mentida): {show_title} ({range_label})",
+        "☕ Sessió golfa de matinada: {show_title} ({range_label})",
+        "🌙 Fent nit ben a gust amb: {show_title} ({range_label})",
+        "💤 Demà me'n penediré, però he vist: {show_title} ({range_label})",
+        "🕯️ Ningú despert, moment de pau amb: {show_title} ({range_label})",
+        "🌌 La nit es presta a maratonejar: {show_title} ({range_label})"
+      ],
+      "morning": [
+        "☕ Començant el dia amb bon ritme i: {show_title} ({range_label})",
+        "🥐 Esmorzar i ració serèfila amb: {show_title} ({range_label})",
+        "☀️ Sessió matinal per arrencar amb energia: {show_title} ({range_label})",
+        "☕ Cafè en mà devorant: {show_title} ({range_label})",
+        "🌅 Matinar per veure un capítol de: {show_title} ({range_label})"
+      ],
+      "afternoon": [
+        "🛋️ Sessió de sobretaula ben aprofitada amb: {show_title} ({range_label})",
+        "☕ Desconnexió de tarda acompanyada de: {show_title} ({range_label})",
+        "🌤️ Tarda perfecta de relax amb: {show_title} ({range_label})",
+        "🛋️ Sofà, tranquil·litat i una estona de: {show_title} ({range_label})",
+        "🍿 La sobretaula entra millor amb: {show_title} ({range_label})"
+      ],
+      "evening": [
+        "🍽️ Sopar i capítol, el ritual sagrat: {show_title} ({range_label})",
+        "🌙 Per tancar la jornada en condicions: {show_title} ({range_label})",
+        "🛋️ Nit de sofà ben merescuda amb: {show_title} ({range_label})",
+        "🍿 Desconnectant de tot per avui amb: {show_title} ({range_label})",
+        "✨ Moment de relax nocturn mirant: {show_title} ({range_label})"
+      ]
+    },
+    "day_of_week": {
+      "monday": [
+        "🛡️ Combatent el dilluns amb: {show_title} ({range_label})",
+        "☕ La millor medicina per començar la setmana: {show_title} ({range_label})",
+        "📺 El dilluns es fa més suportable amb: {show_title} ({range_label})"
+      ],
+      "midweek": [
+        "🐪 Superant l'equador de la setmana amb: {show_title} ({range_label})",
+        "⚡ Ja gairebé és cap de setmana, escalfant amb: {show_title} ({range_label})",
+        "📺 Carregant piles entre setmana amb: {show_title} ({range_label})"
+      ],
+      "friday": [
+        "🎉 Inaugurant el cap de setmana amb: {show_title} ({range_label})",
+        "🍿 Divendres de desconnexió i sèries: {show_title} ({range_label})",
+        "🛋️ Divendres nit al sofà amb: {show_title} ({range_label})",
+        "🍻 No hi ha millor pla de divendres que: {show_title} ({range_label})"
+      ],
+      "saturday": [
+        "🍿 Dissabte de relax i maratoneig amb: {show_title} ({range_label})",
+        "✨ Aprofitant el dissabte com cal: {show_title} ({range_label})",
+        "🛋️ Sense presses ni alarmes, gaudint de: {show_title} ({range_label})"
+      ],
+      "sunday": [
+        "🛋️ Diumenge de sofà, manta i sèries amb: {show_title} ({range_label})",
+        "🍿 Aprofitant les últimes hores del cap de setmana amb: {show_title} ({range_label})",
+        "📺 Rematant el cap de setmana amb estil: {show_title} ({range_label})"
+      ]
+    },
+    "general": [
+      "📺 He vist: {show_title} ({range_label})",
+      "🍿 Continuant amb: {show_title} ({range_label})",
+      "👀 Segueixo enganxat a: {show_title} ({range_label})",
+      "📺 Avançant en la temporada {season_num} de: {show_title} ({range_label})",
+      "✨ Una mica més de: {show_title} ({range_label})",
+      "🛋️ Sessió serèfila amb: {show_title} ({range_label})",
+      "🎬 Ratllant episodis de: {show_title} ({range_label})",
+      "🍿 Ritme constant amb: {show_title} ({range_label})",
+      "📺 Al dia amb: {show_title} ({range_label})",
+      "☕ Dosi diària de: {show_title} ({range_label})",
+      "🎯 Sumant capítols al registre: {show_title} ({range_label})",
+      "🍿 Progressant a bon pas a: {show_title} ({range_label})",
+      "🎬 Cada cop més ficat en la trama de: {show_title} ({range_label})",
+      "🛋️ Bona estona d'entreteniment amb: {show_title} ({range_label})"
+    ]
+  },
+  "movies": {
+    "top_rating": [
+      "🏆 Quina joia acabo de veure: {movie_title}{year_str}",
+      "✨ Cinema amb majúscules: {movie_title}{year_str}",
+      "🍿 Pel·liculassa imprescindible: {movie_title}{year_str}",
+      "🌟 Directa a les meves preferides: {movie_title}{year_str}",
+      "🎬 Quina meravella de pel·lícula: {movie_title}{year_str}",
+      "👏 Feia temps que una pel·li no em sorprenia tant: {movie_title}{year_str}",
+      "💎 Una autèntica obra mestra: {movie_title}{year_str}",
+      "🔥 Cinema d'aquell que deixa empremta: {movie_title}{year_str}"
+    ],
+    "low_rating": [
+      "🫠 Bé... una i no més: {movie_title}{year_str}",
+      "📉 No ha estat la millor tria: {movie_title}{year_str}",
+      "🎬 Pel·lícula vista (bastant oblidable): {movie_title}{year_str}",
+      "🤷‍♂️ Passable sense més, no m'ha convençut: {movie_title}{year_str}",
+      "😴 Bastant decebedora: {movie_title}{year_str}",
+      "🥱 Esperava bastant més de: {movie_title}{year_str}"
+    ],
+    "era": {
+      "classic": [
+        "📼 Rescatant clàssics: {movie_title}{year_str}",
+        "🕰️ Viatge al cinema del segle passat: {movie_title}{year_str}",
+        "📽️ Revisant una joia retro: {movie_title}{year_str}",
+        "🎬 Que bé que envelleixen algunes pel·lis: {movie_title}{year_str}",
+        "🎞️ Clàssic que mai passa de moda: {movie_title}{year_str}",
+        "📼 Cinema d'una altra època que fa goig tornar a veure: {movie_title}{year_str}"
+      ],
+      "recent": [
+        "🆕 Posant-me al dia amb les estrenes: {movie_title}{year_str}",
+        "🍿 Sessió d'estrena recent: {movie_title}{year_str}",
+        "🎬 Per fi he pogut posar-li la mà a sobre a: {movie_title}{year_str}",
+        "✨ Avui ha tocat estrena amb: {movie_title}{year_str}",
+        "🎟️ Cinema fresc acabat de sortir del forn: {movie_title}{year_str}"
+      ]
+    },
+    "time_of_day": {
+      "night": [
+        "🌙 Cinema de matinada: {movie_title}{year_str}",
+        "🦉 Sessió golfa nocturna: {movie_title}{year_str}",
+        "🍿 Pel·lícula a deshores: {movie_title}{year_str}",
+        "✨ Tancant la nit amb cinema: {movie_title}{year_str}",
+        "🌌 Tranquil·litat nocturna i una bona pel·li: {movie_title}{year_str}"
+      ],
+      "afternoon": [
+        "🛋️ Tarda de sofà i bona pel·li: {movie_title}{year_str}",
+        "☕ Cinema de sobretaula ben aprofitat: {movie_title}{year_str}",
+        "🍿 Desconnexió de tarda mirant: {movie_title}{year_str}"
+      ],
+      "evening": [
+        "🍽️ Sopar i pel·lícula, pla perfecte: {movie_title}{year_str}",
+        "🌙 Sessió de cinema nocturna amb: {movie_title}{year_str}",
+        "🍿 Gaudint de la nit amb: {movie_title}{year_str}"
+      ]
+    },
+    "weekend": [
+      "🍿 Sessió de cinema de cap de setmana: {movie_title}{year_str}",
+      "🛋️ Sofà, manta i bona pel·li: {movie_title}{year_str}",
+      "✨ Tarda de cinema per desconnectar amb: {movie_title}{year_str}",
+      "🎬 Gran pla de cap de setmana amb crispetes: {movie_title}{year_str}"
+    ],
+    "general": [
+      "🎬 He vist: {movie_title}{year_str}",
+      "🍿 Sessió de cinema: {movie_title}{year_str}",
+      "🎥 Pel·lícula vista: {movie_title}{year_str}",
+      "✨ Avui ha tocat pel·li: {movie_title}{year_str}",
+      "🛋️ Tarda de sofà i cinema amb: {movie_title}{year_str}",
+      "🎞️ Fitxa completada a {tracker_name}: {movie_title}{year_str}",
+      "🎬 Una altra pel·lícula ratllada de la llista: {movie_title}{year_str}",
+      "🍿 Desconnectant amb: {movie_title}{year_str}",
+      "🎥 Gaudint del setè art amb: {movie_title}{year_str}",
+      "🛋️ Bona estona de cinema amb: {movie_title}{year_str}",
+      "🎬 Una història interessant: {movie_title}{year_str}",
+      "🍿 Temps ben invertit mirant: {movie_title}{year_str}"
+    ]
+  },
+  "labels": {
+    "rating_show": "⭐ La meva valoració: {user_rating}/10",
+    "rating_movie": "⭐ La meva valoració: {user_rating}/10"
+  }
+}

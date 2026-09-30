@@ -1,0 +1,38 @@
+{
+  "_comment": "Copia este archivo a 'custom_phrases.json' en /data para añadir o sustituir tus frases personalizadas.",
+  "_instructions": "Las frases añadidas se suman automáticamente a las del sistema (hot-reload sin reiniciar). Si quieres que una categoría use EXCLUSIVAMENTE tus frases, añade su ruta al array 'replace' (ej: 'replace': ['shows.finale']).",
+  "replace": [],
+  "shows": {
+    "finale": [
+      "🏆 Se acabó lo que se daba con {show_title} (T{season_num}). ¡Tremendo final!",
+      "🎬 Finiquitada la temporada {season_num} de {show_title}. ¿Alguien más en la sala?"
+    ],
+    "volume": {
+      "mega_4": [
+        "🔥 ¡Atracón legendario de {show_title} ({range_label})! Sin frenos.",
+        "🍿 He perdido la cuenta de los capítulos que llevo hoy de {show_title} ({range_label})."
+      ]
+    },
+    "general": [
+      "🍿 Enganchado a tope con {show_title} ({range_label})",
+      "✨ Dosis diaria de {show_title} ({range_label})"
+    ]
+  },
+  "movies": {
+    "top_rating": [
+      "🌟 Qué obra de arte irrepetible: {movie_title}{year_str}"
+    ],
+    "general": [
+      "🎬 Otra película palomitera para la saca: {movie_title}{year_str}"
+    ]
+  },
+  "engagement_questions": {
+    "finale": [
+      "¿La habéis visto? ¿Qué nota le dais vosotros? 👇",
+      "Acepto recomendaciones para superar este vacío existencial seriéfilo 🍿"
+    ],
+    "weekly": [
+      "¿Coincidimos con alguna serie esta semana? Contadme en comentarios 👇"
+    ]
+  }
+}

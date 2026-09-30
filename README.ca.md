@@ -1,0 +1,100 @@
+# 📺 Bluesky Media Scrobbler (`bsky-media-scrobbler`)
+
+<p align="center">
+  <b>Llengua:</b>
+  <a href="README.md">🇬🇧 English</a> •
+  <a href="README.es.md">🇪🇸 Español</a> •
+  <a href="README.ca.md">🏴󠁥󠁳󠁣󠁴󠁿 Català</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.12-blue.svg?logo=python" alt="Python 3.12" />
+  <img src="https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker" alt="Docker Ready" />
+  <img src="https://img.shields.io/badge/Bluesky-AT%20Protocol-0085ff.svg?logo=bluesky" alt="Bluesky" />
+  <img src="https://img.shields.io/badge/Llicència-MIT-green.svg" alt="Llicència MIT" />
+</p>
+
+Bot autònom en Python per a Docker que monitoritza la teva activitat a les teves plataformes de seguiment preferides (**SIMKL**, **WeTrakr**) i la publica de forma enriquida a **Bluesky** amb targetes externes cap a **TMDB**, collages visuals en alta definició, balanços periòdics i comptador de ratxes.
+
+---
+
+## ✨ Característiques Principals
+
+* 🔌 **Multi-Tracker Universal:** Suport natiu per a **SIMKL** i **WeTrakr** seleccionable mitjançant variable d'entorn (`TRACKER_PROVIDER`).
+* 📦 **Agrupació Intel·ligent de Maratons:** Si mires diversos capítols consecutius (ex. `T01E01–E03`), els agrupa en un únic post net per no saturar el teu timeline.
+* 🎬 **Fitxes Enriquides (TMDB):** Targetes interactives externes cap a The Movie Database amb caràtula oficial en alta definició.
+* ✍️ **Motor de Frases i Multi-idioma (i18n):**
+  * Més de 220 frases oficials classificades per franges horàries, dies de la setmana, volum de sessió, finals de temporada i fites de trama.
+  * Suport natiu multilingüe: **Català (`ca`)**, **Espanyol (`es`)** i **Anglès (`en`)** mitjançant `BSKY_LANG`.
+  * **Frases personalitzades (`/data/custom_phrases.json`)** amb **recàrrega en calent (hot-reload)** sense necessitat de reiniciar el contenidor.
+* 📺 **Detecció Contextual Avançada:**
+  * Distingeix amb precisió entre un **final definitiu de temporada** i l'**últim emès** en sèries en emissió setmanal activa.
+  * Detecció de **rescat de backlog** després de més d'any i mig sense activitat en una sèrie.
+  * Crides a la conversa i preguntes obertes per fomentar la interacció a Bluesky.
+* 📊 **Informes i Collages Periòdics amb Pillow:**
+  * **Balanç Setmanal:** Els dilluns a les 09:30h amb la setmana natural tancada i **collage de caràtules (3x3 o 2x2)** en alta definició.
+  * **Balanç Mensual:** El dia 1 de cada mes a les 09:30h amb el balanç tancat del mes anterior.
+  * **Curiositats (Fun Facts):** El dia 15 de cada mes a les 12:00h analitzant patrons de marató, hora punta o la sèrie més llarga completada.
+* 🔥 **Ratxes i Fites:** Celebració de ratxes consecutives (a partir de 7 dies continus) i fites històriques d'episodis, sèries completades i pel·lícules.
+* ⚡ **Disparadors Manuals a Demanda:** Fitxers senyal (`trigger_weekly`, `trigger_monthly`, `trigger_fun_fact`) per forçar informes des de panells com **OliveTin**.
+
+---
+
+## 📚 Documentació i Wiki
+
+Per consultar guies detallades pas a pas sobre cada mòdul del projecte:
+
+* ⚙️ **[Guia de Configuració i Variables d'Entorn (Espanyol)](docs/es/CONFIGURACION.md) / [English](docs/en/CONFIGURATION.md):** Paràmetres del `.env`, estructura de volums, permisos i plantilla per a Dockge/Compose.
+* ✍️ **[Motor de Frases Personalitzades (Espanyol)](docs/es/FRASES_PERSONALIZADAS.md) / [English](docs/en/CUSTOM_PHRASES.md):** Com crear el teu propi `custom_phrases.json`, variables disponibles (`{show_title}`, `{season_num}`...), modes suma vs reemplaçament i recàrrega en calent.
+* 📊 **[Estadístiques, Informes i Collages Visuals (Espanyol)](docs/es/ESTADISTICAS.md) / [English](docs/en/STATISTICS.md):** Calendari de balanços, especificacions d'imatge de Pillow i configuració a OliveTin.
+* 🔌 **[Proveïdors de Seguiment: SIMKL i WeTrakr (Espanyol)](docs/es/PROVEEDORES.md) / [English](docs/en/PROVIDERS.md):** Obtenció d'API keys, flux d'autorització per codi PIN (`Device Auth`) i renovació automàtica de tokens.
+
+---
+
+## 🚀 Desplegament Ràpid (Quick Start)
+
+### 1. Clonar i preparar entorn
+```bash
+git clone https://github.com/el-teu-usuari/bsky-media-scrobbler.git
+cd bsky-media-scrobbler
+cp .env.example .env
+mkdir -p data
+```
+
+### 2. Configurar credencials a `.env`
+```env
+TRACKER_PROVIDER=simkl
+SIMKL_CLIENT_ID=el_teu_simkl_client_id
+BSKY_HANDLE=el-teu-compte.bsky.social
+BSKY_APP_PASSWORD=la_teva_app_password
+BSKY_LANG=ca
+TZ=Europe/Madrid
+```
+
+### 3. Iniciar el servei amb Docker Compose
+```bash
+docker compose up -d
+```
+
+---
+
+## 🛠️ Tecnologies i Dependències
+
+* **Python 3.12**
+* [atproto](https://github.com/MarshalX/atproto) - SDK oficial per al protocol AT de Bluesky.
+* [Pillow (PIL)](https://python-pillow.org/) - Motor de composició gràfica de collages en alta definició.
+* [Requests](https://requests.readthedocs.io/) - Client HTTP per al consum d'APIs de SIMKL, WeTrakr i TMDB.
+
+---
+
+## 📄 Llicència
+
+Aquest projecte es distribueix sota la llicència [MIT](LICENSE).
+
+---
+
+## 🙏 Crèdits i Agraïments
+
+* Inspirat originalment en el projecte [SIMKLTrackerBot](https://github.com/donnyfly/SIMKLTrackerBot) de **@donnyfly**.
+* A les plataformes **SIMKL** i **WeTrakr** per les seves APIs i serveis de seguiment.
+* A **The Movie Database (TMDB)** per les seves metadades i caràtules en alta definició.

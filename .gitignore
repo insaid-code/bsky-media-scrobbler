@@ -1,0 +1,34 @@
+# Secretos y credenciales
+.env
+.env.*
+!.env.example
+
+# Datos persistentes y estado local
+data/*
+!data/custom_phrases.example.json
+data_dev/
+*.tmp
+*.log
+
+# Archivos señal efímeros de triggers
+trigger_*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+env/
+venv/
+ENV/
+
+# Sistema, NAS y editores
+.DS_Store
+.idea/
+.vscode/
+Thumbs.db
+@eaDir/
+@eaDir
+#recycle/
+

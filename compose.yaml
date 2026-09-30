@@ -1,0 +1,26 @@
+services:
+  bsky-media-scrobbler:
+    image: python:3.12-slim
+    container_name: bsky-media-scrobbler
+    restart: unless-stopped
+    working_dir: /app
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt && python -u main.py"
+    mem_limit: 256m
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+      - PYTHONUNBUFFERED=1
+      - DRY_RUN=${DRY_RUN:-false}
+      - TRACKER_PROVIDER=${TRACKER_PROVIDER:-simkl}
+      - SIMKL_CLIENT_ID=${SIMKL_CLIENT_ID}
+      - SIMKL_USER_TOKEN=${SIMKL_USER_TOKEN}
+      - WETRAKR_CLIENT_ID=${WETRAKR_CLIENT_ID}
+      - WETRAKR_CLIENT_SECRET=${WETRAKR_CLIENT_SECRET}
+      - BSKY_HANDLE=${BSKY_HANDLE}
+      - BSKY_APP_PASSWORD=${BSKY_APP_PASSWORD}
+      - BSKY_LANG=${BSKY_LANG:-es}
+      - POLL_INTERVAL_MINUTES=${POLL_INTERVAL_MINUTES:-90}
+      - LINK_DESTINATION=${LINK_DESTINATION:-tmdb}
+    volumes:
+      - ./app:/app
+      - ./data:/data

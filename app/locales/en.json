@@ -1,0 +1,323 @@
+{
+  "engagement_questions": {
+    "finale": [
+      "Has anyone else finished this? What did you think of the finale? (No spoilers! 👇)",
+      "What a journey this season was. What score would you give it? 👇",
+      "Thoughts on the ending? Taking recommendations to fill the void it left 🍿",
+      "Did this season finale live up to your expectations? 👇",
+      "How are you feeling after that season finale? Let me know below 👇"
+    ],
+    "top_movie": [
+      "It has been a while since a movie left me with this feeling. Have you seen it? 👇",
+      "Cinema at its finest. Any similar recommendations I should watch? 🎬",
+      "What did you think if you have seen it? Does it live up to the hype? 👇",
+      "Straight to my all-time favorites list. What is your favorite in this genre? 🍿"
+    ],
+    "weekly": [
+      "How was your TV week? Any gems you would recommend? 🍿",
+      "What was the best thing you watched over the last 7 days? 👇",
+      "Week wrapped up! What do you have lined up to watch next? 📺",
+      "Did we watch any of the same shows this week? Let me know 👇"
+    ],
+    "monthly": [
+      "What was your standout show or movie this month? 🍂",
+      "Wrapping up the month caught up on everything. What upcoming releases are on your radar? 👇",
+      "How many shows or movies did you watch this month? Let me know 👇"
+    ],
+    "streak": [
+      "What is your longest daily TV watching streak? 📺🔥",
+      "Consistency is key... are you a daily episode watcher or a weekend binger? 👇",
+      "Keeping the streak alive! Who else has an active streak going? ⚡"
+    ]
+  },
+  "shows": {
+    "finale": [
+      "🏆 Season finale: {show_title} (S{season_num})",
+      "📺 Finished Season {season_num} of: {show_title}",
+      "🎬 Wrapped up Season {season_num} of: {show_title}",
+      "✨ And that is a wrap on Season {season_num} of: {show_title}",
+      "🏁 Season {season_num} checked off the list: {show_title}",
+      "🍿 Reached the climax of Season {season_num} of: {show_title}",
+      "📺 Season {season_num} watched and done: {show_title}",
+      "🔚 What a great finish to Season {season_num} of: {show_title}",
+      "🎯 Mission accomplished with Season {season_num} of: {show_title}",
+      "👏 Season {season_num} done, now waiting for the next: {show_title}",
+      "📦 Closing the book on Season {season_num} of: {show_title}",
+      "💥 Incredible season finale for: {show_title} (S{season_num})"
+    ],
+    "caught_up": {
+      "marathon_4": [
+        "🚨 Serious binge session to get caught up with: {show_title} ({range_label})",
+        "🔥 Marathon session to reach the latest episode of: {show_title} ({range_label})",
+        "📺 All caught up after a massive binge of: {show_title} ({range_label})",
+        "🍿 Full binge mode engaged to catch up on: {show_title} ({range_label})"
+      ],
+      "triple_3": [
+        "🍿 Three-episode run and all caught up with: {show_title} ({range_label})",
+        "🔥 Three back-to-back to catch up to the broadcast of: {show_title} ({range_label})",
+        "✨ All caught up with: {show_title} ({range_label})",
+        "📺 Mini-marathon to get up to date with: {show_title} ({range_label})"
+      ],
+      "double_2": [
+        "✌️ Double feature to get caught up with: {show_title} ({range_label})",
+        "🎬 Two back-to-back and up to date with: {show_title} ({range_label})",
+        "🍿 Double bill to catch the latest of: {show_title} ({range_label})",
+        "✨ Caught up with the latest aired episode of: {show_title} ({range_label})"
+      ],
+      "single_1": [
+        "📺 Caught up with the broadcast of: {show_title} ({range_label})",
+        "✨ Up to date with the latest episode of: {show_title} ({range_label})",
+        "👀 All caught up on: {show_title} ({range_label}). Waiting for the next one!",
+        "🍿 Keeping up with the weekly broadcast: {show_title} ({range_label})",
+        "⚡ Current on the weekly release of: {show_title} ({range_label})",
+        "🛋️ Watched the latest available episode of: {show_title} ({range_label})",
+        "🎬 Following along with Season {season_num} of: {show_title} ({range_label})",
+        "📺 Up to date with the newest episode of: {show_title} ({range_label})",
+        "👀 Hooked on the weekly release rhythm of: {show_title} ({range_label})",
+        "🍿 Everything watched up to date for: {show_title} ({range_label})",
+        "✨ Latest aired episode finished: {show_title} ({range_label})",
+        "🛋️ Keeping pace with: {show_title} ({range_label})",
+        "🎯 Current on the latest episode of: {show_title} ({range_label})",
+        "🍿 Catching up with the latest in: {show_title} ({range_label})"
+      ]
+    },
+    "backlog_rescue": [
+      "🕰️ Rescuing from the backlog: after {months} months on pause, resuming: {show_title} ({range_label})",
+      "📼 Dusting off the watchlist: back at it with {show_title} after {years} years untouched.",
+      "🕸️ Dusting off the cobwebs on: {show_title} ({range_label}). Let see if I remember the plot...",
+      "⏳ Never too late if the show is good: resuming {show_title} after a {months}-month hiatus.",
+      "📦 Rescued from the backlog: {show_title} ({range_label})"
+    ],
+    "volume": {
+      "mega_4": [
+        "🚨 Serious binge: {show_title} ({range_label})",
+        "🛋️ Said \"just one more episode\" 4 episodes ago...: {show_title} ({range_label})",
+        "🔥 Completely lost track of time devouring: {show_title} ({range_label})",
+        "🍿 True mega-marathon of: {show_title} ({range_label})",
+        "⚡ When the \"Next Episode\" button rules your life: {show_title} ({range_label})",
+        "📺 Epic viewing session with: {show_title} ({range_label})",
+        "🏆 Massive marathon pushing through: {show_title} ({range_label})"
+      ],
+      "triple_3": [
+        "🍿 Unstoppable marathon of: {show_title} ({range_label})",
+        "📺 Binge mode activated: {show_title} ({range_label})",
+        "🔥 Intensive session devouring: {show_title} ({range_label})",
+        "🛋️ Binge session got a little out of hand: {show_title} ({range_label})",
+        "⚡ Chaining episodes back-to-back: {show_title} ({range_label})",
+        "🍿 When a show grabs you and will not let go: {show_title} ({range_label})",
+        "🎬 Three in a row almost without breathing: {show_title} ({range_label})",
+        "✨ Solid triple dose of: {show_title} ({range_label})"
+      ],
+      "double_2": [
+        "✌️ Double portion of: {show_title} ({range_label})",
+        "🎬 Two back-to-back to warm up: {show_title} ({range_label})",
+        "🍿 Double feature session nicely done: {show_title} ({range_label})",
+        "📺 Tandem episodes of: {show_title} ({range_label})",
+        "🛋️ One was not enough, so two went down: {show_title} ({range_label})",
+        "✨ Two episodes in a row of: {show_title} ({range_label})"
+      ]
+    },
+    "season_milestones": {
+      "show_premiere": [
+        "✨ Starting a new show: {show_title} ({range_label})",
+        "📺 Giving a shot to: {show_title} ({range_label})",
+        "👀 Starting off with: {show_title} ({range_label})",
+        "🍿 First steps into: {show_title} ({range_label})",
+        "🆕 New TV discovery: {show_title} ({range_label})",
+        "🎬 Let see how the pilot holds up: {show_title} ({range_label})",
+        "✨ Adding one more show to the catalogue: {show_title} ({range_label})",
+        "🚀 Taking off with: {show_title} ({range_label})",
+        "🔍 Let see if it hooks me: {show_title} ({range_label})",
+        "🛋️ Starting a new TV journey with: {show_title} ({range_label})"
+      ],
+      "season_premiere": [
+        "✨ Kicking off Season {season_num} of: {show_title} ({range_label})",
+        "📺 Starting Season {season_num} of: {show_title} ({range_label})",
+        "👀 Returning to the world of: {show_title} ({range_label})",
+        "🍿 Really excited to get back into: {show_title} ({range_label})",
+        "🎬 Season {season_num} underway: {show_title} ({range_label})",
+        "🔄 Picking up right where we left off with: {show_title} ({range_label})",
+        "🍿 Been looking forward to Season {season_num} of: {show_title} ({range_label})",
+        "📺 Back at it with Season {season_num} of: {show_title} ({range_label})"
+      ],
+      "penultimate": [
+        "⚡ Maximum tension right before the finale of: {show_title} ({range_label})",
+        "👀 Just one episode away from finishing the season of: {show_title} ({range_label})",
+        "🍿 Penultimate episode watched, things are heating up in: {show_title} ({range_label})",
+        "🔥 Everything set for the grand finale of: {show_title} ({range_label})",
+        "😱 Getting everything ready for the ending of: {show_title} ({range_label})",
+        "🎬 Not sure if I am ready for the finale of: {show_title} ({range_label})"
+      ],
+      "final_stretch": [
+        "🔥 Final stretch of Season {season_num} of: {show_title} ({range_label})",
+        "👀 Climax is approaching in: {show_title} ({range_label})",
+        "🍿 Almost finished with this season: {show_title} ({range_label})",
+        "⚡ Final act of Season {season_num} of: {show_title} ({range_label})",
+        "🎯 Pieces are coming together in: {show_title} ({range_label})"
+      ],
+      "mid_season": [
+        "🎯 Right at the midpoint of Season {season_num} of: {show_title} ({range_label})",
+        "⚖️ Halfway point crossed in: {show_title} ({range_label})",
+        "📈 Passing the midpoint in great stride: {show_title} ({range_label})",
+        "🎬 Season {season_num} crossing its halfway mark: {show_title} ({range_label})"
+      ]
+    },
+    "time_of_day": {
+      "night": [
+        "🌙 Up late devouring: {show_title} ({range_label})",
+        "🦉 Putting insomnia to good use with: {show_title} ({range_label})",
+        "✨ One more episode and then bed (lies): {show_title} ({range_label})",
+        "☕ Late night binge session: {show_title} ({range_label})",
+        "🌙 Staying up happily with: {show_title} ({range_label})",
+        "💤 I might regret this tomorrow, but I watched: {show_title} ({range_label})",
+        "🕯️ Everyone asleep, peaceful time with: {show_title} ({range_label})",
+        "🌌 Night was made for binging: {show_title} ({range_label})"
+      ],
+      "morning": [
+        "☕ Starting the day with good vibes and: {show_title} ({range_label})",
+        "🥐 Breakfast and TV dose with: {show_title} ({range_label})",
+        "☀️ Morning session to kick off with energy: {show_title} ({range_label})",
+        "☕ Coffee in hand watching: {show_title} ({range_label})",
+        "🌅 Up early to catch an episode of: {show_title} ({range_label})"
+      ],
+      "afternoon": [
+        "🛋️ Afternoon session well spent with: {show_title} ({range_label})",
+        "☕ Afternoon wind-down with: {show_title} ({range_label})",
+        "🌤️ Perfect relaxing afternoon with: {show_title} ({range_label})",
+        "🛋️ Sofa, quiet and a little bit of: {show_title} ({range_label})",
+        "🍿 Afternoon downtime goes better with: {show_title} ({range_label})"
+      ],
+      "evening": [
+        "🍽️ Dinner and an episode, the sacred ritual: {show_title} ({range_label})",
+        "🌙 Ending the day the right way: {show_title} ({range_label})",
+        "🛋️ Well-deserved evening on the couch with: {show_title} ({range_label})",
+        "🍿 Disconnecting from everything today with: {show_title} ({range_label})",
+        "✨ Nighttime relaxation watching: {show_title} ({range_label})"
+      ]
+    },
+    "day_of_week": {
+      "monday": [
+        "🛡️ Beating Monday with: {show_title} ({range_label})",
+        "☕ The best cure to kick off the week: {show_title} ({range_label})",
+        "📺 Monday is much more bearable with: {show_title} ({range_label})"
+      ],
+      "midweek": [
+        "🐪 Halfway through the work week with: {show_title} ({range_label})",
+        "⚡ Almost the weekend, getting ready with: {show_title} ({range_label})",
+        "📺 Recharging midweek with: {show_title} ({range_label})"
+      ],
+      "friday": [
+        "🎉 Kicking off the weekend with: {show_title} ({range_label})",
+        "🍿 Friday wind-down with shows: {show_title} ({range_label})",
+        "🛋️ Friday night on the couch with: {show_title} ({range_label})",
+        "🍻 No better Friday plan than: {show_title} ({range_label})"
+      ],
+      "saturday": [
+        "🍿 Saturday relaxation and binging with: {show_title} ({range_label})",
+        "✨ Making the most of Saturday as it should be: {show_title} ({range_label})",
+        "🛋️ No rush, no alarms, just enjoying: {show_title} ({range_label})"
+      ],
+      "sunday": [
+        "🛋️ Sunday on the couch with blankets and: {show_title} ({range_label})",
+        "🍿 Squeezing the last hours of the weekend with: {show_title} ({range_label})",
+        "📺 Wrapping up the weekend in style: {show_title} ({range_label})"
+      ]
+    },
+    "general": [
+      "📺 Watched: {show_title} ({range_label})",
+      "🍿 Continuing with: {show_title} ({range_label})",
+      "👀 Still hooked on: {show_title} ({range_label})",
+      "📺 Moving forward in Season {season_num} of: {show_title} ({range_label})",
+      "✨ A bit more of: {show_title} ({range_label})",
+      "🛋️ TV session with: {show_title} ({range_label})",
+      "🎬 Crossing episodes off the list: {show_title} ({range_label})",
+      "🍿 Steady pace with: {show_title} ({range_label})",
+      "📺 Up to date with: {show_title} ({range_label})",
+      "☕ Daily dose of: {show_title} ({range_label})",
+      "🎯 Adding episodes to the log: {show_title} ({range_label})",
+      "🍿 Making great progress in: {show_title} ({range_label})",
+      "🎬 Deeper into the story of: {show_title} ({range_label})",
+      "🛋️ Great time of entertainment with: {show_title} ({range_label})"
+    ]
+  },
+  "movies": {
+    "top_rating": [
+      "🏆 What an absolute gem I just watched: {movie_title}{year_str}",
+      "✨ Cinema in all its glory: {movie_title}{year_str}",
+      "🍿 Must-watch masterpiece: {movie_title}{year_str}",
+      "🌟 Straight into my all-time favorites: {movie_title}{year_str}",
+      "🎬 What a wonderful film: {movie_title}{year_str}",
+      "👏 It has been a long time since a movie surprised me this much: {movie_title}{year_str}",
+      "💎 A true work of art: {movie_title}{year_str}",
+      "🔥 The kind of film that leaves a mark: {movie_title}{year_str}"
+    ],
+    "low_rating": [
+      "🫠 Well... one and done: {movie_title}{year_str}",
+      "📉 Not the best choice: {movie_title}{year_str}",
+      "🎬 Movie watched (quite forgettable): {movie_title}{year_str}",
+      "🤷‍♂️ Passable at best, did not convince me: {movie_title}{year_str}",
+      "😴 Quite disappointing: {movie_title}{year_str}",
+      "🥱 Was expecting much more from: {movie_title}{year_str}"
+    ],
+    "era": {
+      "classic": [
+        "📼 Digging up classics: {movie_title}{year_str}",
+        "🕰️ Journey into 20th century cinema: {movie_title}{year_str}",
+        "📽️ Revisiting a retro gem: {movie_title}{year_str}",
+        "🎬 Some movies age so wonderfully: {movie_title}{year_str}",
+        "🎞️ Classic that never goes out of style: {movie_title}{year_str}",
+        "📼 Cinema from another era that is always a joy to rewatch: {movie_title}{year_str}"
+      ],
+      "recent": [
+        "🆕 Catching up on recent releases: {movie_title}{year_str}",
+        "🍿 Fresh movie night: {movie_title}{year_str}",
+        "🎬 Finally got around to watching: {movie_title}{year_str}",
+        "✨ Watched a recent premiere today: {movie_title}{year_str}",
+        "🎟️ Fresh cinema straight out of the oven: {movie_title}{year_str}"
+      ]
+    },
+    "time_of_day": {
+      "night": [
+        "🌙 Late night cinema: {movie_title}{year_str}",
+        "🦉 Night owl movie session: {movie_title}{year_str}",
+        "🍿 Movie at odd hours: {movie_title}{year_str}",
+        "✨ Ending the night with cinema: {movie_title}{year_str}",
+        "🌌 Nighttime peace and a good movie: {movie_title}{year_str}"
+      ],
+      "afternoon": [
+        "🛋️ Afternoon on the couch with a good movie: {movie_title}{year_str}",
+        "☕ Afternoon movie well spent: {movie_title}{year_str}",
+        "🍿 Afternoon downtime watching: {movie_title}{year_str}"
+      ],
+      "evening": [
+        "🍽️ Dinner and a movie, perfect plan: {movie_title}{year_str}",
+        "🌙 Evening movie session with: {movie_title}{year_str}",
+        "🍿 Enjoying the night with: {movie_title}{year_str}"
+      ]
+    },
+    "weekend": [
+      "🍿 Weekend movie session: {movie_title}{year_str}",
+      "🛋️ Couch, blanket and a good film: {movie_title}{year_str}",
+      "✨ Movie afternoon to unwind with: {movie_title}{year_str}",
+      "🎬 Great weekend plan with popcorn: {movie_title}{year_str}"
+    ],
+    "general": [
+      "🎬 Watched: {movie_title}{year_str}",
+      "🍿 Movie time: {movie_title}{year_str}",
+      "🎥 Feature film seen: {movie_title}{year_str}",
+      "✨ Movie day today: {movie_title}{year_str}",
+      "🛋️ Couch and cinema afternoon with: {movie_title}{year_str}",
+      "🎞️ Entry completed in {tracker_name}: {movie_title}{year_str}",
+      "🎬 Another movie checked off the list: {movie_title}{year_str}",
+      "🍿 Unwinding with: {movie_title}{year_str}",
+      "🎥 Enjoying the seventh art with: {movie_title}{year_str}",
+      "🛋️ Good time of cinema with: {movie_title}{year_str}",
+      "🎬 An interesting story: {movie_title}{year_str}",
+      "🍿 Time well spent watching: {movie_title}{year_str}"
+    ]
+  },
+  "labels": {
+    "rating_show": "⭐ My rating: {user_rating}/10",
+    "rating_movie": "⭐ My rating: {user_rating}/10"
+  }
+}

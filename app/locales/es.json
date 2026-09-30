@@ -1,0 +1,322 @@
+{
+  "engagement_questions": {
+    "finale": [
+      "¿Alguien más la ha terminado? ¿Qué os pareció el desenlace? (Cero spoilers por aquí 👇)",
+      "Menudo viaje esta temporada. ¿Qué nota le pondríais vosotros? 👇",
+      "¿Opiniones del final? Acepto recomendaciones para llenar el vacío que deja 🍿",
+      "¿Cumplió las expectativas este final de temporada o esperabais más? 👇",
+      "¿Qué sensaciones os ha dejado el cierre de temporada? Os leo 👇"
+    ],
+    "top_movie": [
+      "Hacía tiempo que una película no me dejaba con esta sensación. ¿La habéis visto? 👇",
+      "Cine en mayúsculas. ¿Alguna recomendación parecida que deba ver sí o sí? 🎬",
+      "¿Qué os pareció a los que la habéis visto? ¿Merece tanta fama? 👇",
+      "Directa a mi lista de imprescindibles. ¿Cuál es vuestra favorita del género? 🍿"
+    ],
+    "weekly": [
+      "¿Y vosotros, qué tal habéis cerrado la semana seriéfila? ¿Alguna joya que destacar? 🍿",
+      "¿Qué ha sido lo mejor que habéis visto estos últimos 7 días? 👇",
+      "Semana finiquitada. ¿Qué tenéis en cola para empezar el lunes? 📺",
+      "¿Coincidimos con alguna serie esta semana? Contadme en comentarios 👇"
+    ],
+    "monthly": [
+      "¿Qué balance hacéis de vuestro mes seriéfilo? ¿Cuál ha sido vuestra sorpresa del mes? 🍂",
+      "Cerrando mes con el catálogo al día. ¿Qué estrenos del próximo mes tenéis en el radar? 👇",
+      "¿Cuántas series o pelis han caído en vuestra cuenta este mes? Os leo 👇"
+    ],
+    "streak": [
+      "¿Cuál es vuestra mayor racha de días viendo series sin descanso? 📺🔥",
+      "La constancia ante todo... ¿sois de ver capítulo diario o más de atracón de fin de semana? 👇",
+      "Seguimos con el contador en marcha. ¿Quién más mantiene una racha activa por aquí? ⚡"
+    ]
+  },
+  "shows": {
+    "finale": [
+      "🏆 Final de temporada: {show_title} (T{season_num})",
+      "📺 Temporada {season_num} completada de: {show_title}",
+      "🎬 Finiquitada la temporada {season_num} de: {show_title}",
+      "✨ Y con esto... final de la temporada {season_num} de: {show_title}",
+      "🏁 Temporada {season_num} tachada de la lista: {show_title}",
+      "🍿 Llegamos al desenlace de la temporada {season_num} de: {show_title}",
+      "📺 Temporada {season_num} vista y sentenciada: {show_title}",
+      "🔚 Broche de oro para la temporada {season_num} de: {show_title}",
+      "🎯 Misión cumplida con la temporada {season_num} de: {show_title}",
+      "👏 Temporada {season_num} finiquitada, a esperar la siguiente: {show_title}",
+      "📦 Cerrando la temporada {season_num} de: {show_title}",
+      "💥 Tremendo cierre de temporada para: {show_title} (T{season_num})"
+    ],
+    "caught_up": {
+      "marathon_4": [
+        "🚨 Tremendo atracón para ponerme al día con: {show_title} ({range_label})",
+        "🔥 Sesión maratoniana hasta alcanzar el último emitido de: {show_title} ({range_label})",
+        "📺 Al día con la emisión tras un atracón serio de: {show_title} ({range_label})",
+        "🍿 Modo maratón activado para quedar al día con: {show_title} ({range_label})"
+      ],
+      "triple_3": [
+        "🍿 Triplete de episodios y al día con: {show_title} ({range_label})",
+        "🔥 Tres del tirón para alcanzar la emisión de: {show_title} ({range_label})",
+        "✨ Puesto al día con la emisión de: {show_title} ({range_label})",
+        "📺 Maratón exprés para ponerme al día con: {show_title} ({range_label})"
+      ],
+      "double_2": [
+        "✌️ Doble sesión para ponerme al día con: {show_title} ({range_label})",
+        "🎬 Dos del tirón y al día con: {show_title} ({range_label})",
+        "🍿 Doblete para alcanzar la emisión de: {show_title} ({range_label})",
+        "✨ Puesto al día con el último emitido de: {show_title} ({range_label})"
+      ],
+      "single_1": [
+        "📺 Al día con la emisión de: {show_title} ({range_label})",
+        "✨ Puesto al día con el último emitido de: {show_title} ({range_label})",
+        "👀 Al día con: {show_title} ({range_label}). ¡A esperar el siguiente!",
+        "🍿 Siguiendo el ritmo de emisión: {show_title} ({range_label})",
+        "⚡ Al día con las emisiones semanales de: {show_title} ({range_label})",
+        "🛋️ Visto el último capítulo disponible de: {show_title} ({range_label})",
+        "🎬 Siguiendo al día la temporada {season_num} de: {show_title} ({range_label})",
+        "📺 Al día con lo más reciente de: {show_title} ({range_label})",
+        "👀 Enganchado al ritmo de emisión semanal: {show_title} ({range_label})",
+        "🍿 Todo visto hasta la fecha en: {show_title} ({range_label})",
+        "✨ Último capítulo emitido finiquitado: {show_title} ({range_label})",
+        "🛋️ Siguiendo la emisión al día de: {show_title} ({range_label})",
+        "🎯 Al día con el último capítulo de: {show_title} ({range_label})",
+        "🍿 Poniéndome al día con lo último de: {show_title} ({range_label})"
+      ]
+    },
+    "backlog_rescue": [
+      "🕰️ Rescate del baúl de los recuerdos: tras más de {months} meses en pausa, retomo: {show_title} ({range_label})",
+      "📼 Desempolvando series pendientes: vuelvo a la carga con: {show_title} tras {years} años sin tocarla.",
+      "🕸️ Quitándole las telarañas a: {show_title} ({range_label}). A ver si me acuerdo de quién era el malo...",
+      "⏳ Nunca es tarde si la serie es buena: retomando {show_title} tras {months} meses de parón.",
+      "📦 Rescatando del backlog una de las que tenía pendientes: {show_title} ({range_label})"
+    ],
+    "volume": {
+      "mega_4": [
+        "🚨 Atracón serio: {show_title} ({range_label})",
+        "🛋️ Dije «un capítulo y lo dejo» hace 4 episodios...: {show_title} ({range_label})",
+        "🔥 He perdido la noción del tiempo devorando: {show_title} ({range_label})",
+        "🍿 Mega-maratón en toda regla de: {show_title} ({range_label})",
+        "⚡ Cuando el botón de 'Siguiente episodio' manda en tu vida: {show_title} ({range_label})",
+        "📺 Sesión de las que hacen época con: {show_title} ({range_label})",
+        "🏆 Maratón monumental para avanzar en: {show_title} ({range_label})"
+      ],
+      "triple_3": [
+        "🍿 Maratón sin freno de: {show_title} ({range_label})",
+        "📺 Modo maratón activado: {show_title} ({range_label})",
+        "🔥 Sesión intensiva devorando: {show_title} ({range_label})",
+        "🛋️ Se me ha ido de las manos la maratón de: {show_title} ({range_label})",
+        "⚡ Encadenando capítulos sin piedad: {show_title} ({range_label})",
+        "🍿 Cuando una serie te atrapa no hay escapatoria: {show_title} ({range_label})",
+        "🎬 Tres del tirón casi sin respirar: {show_title} ({range_label})",
+        "✨ Buena dosis en tanda triple de: {show_title} ({range_label})"
+      ],
+      "double_2": [
+        "✌️ Doble ración de: {show_title} ({range_label})",
+        "🎬 Dos del tirón para entrar en calor: {show_title} ({range_label})",
+        "🍿 Sesión doble bien despachada: {show_title} ({range_label})",
+        "📺 Tándem de episodios con: {show_title} ({range_label})",
+        "🛋️ El primero supo a poco, así que cayeron dos de: {show_title} ({range_label})",
+        "✨ Dos capitulitos seguidos de: {show_title} ({range_label})"
+      ]
+    },
+    "season_milestones": {
+      "show_premiere": [
+        "✨ Empezando serie nueva: {show_title} ({range_label})",
+        "📺 Dándole una oportunidad a: {show_title} ({range_label})",
+        "👀 Arrancando con: {show_title} ({range_label})",
+        "🍿 Primeros compases de: {show_title} ({range_label})",
+        "🆕 Nuevo descubrimiento seriéfilo: {show_title} ({range_label})",
+        "🎬 A ver qué tal se porta el piloto de: {show_title} ({range_label})",
+        "✨ Sumando una serie más al catálogo: {show_title} ({range_label})",
+        "🚀 Despegando con: {show_title} ({range_label})",
+        "🔍 Veremos si me engancha: {show_title} ({range_label})",
+        "🛋️ Iniciando nuevo viaje seriéfilo con: {show_title} ({range_label})"
+      ],
+      "season_premiere": [
+        "✨ Arrancando la temporada {season_num} de: {show_title} ({range_label})",
+        "📺 Empezando la temporada {season_num} de: {show_title} ({range_label})",
+        "👀 Regresando al universo de: {show_title} ({range_label})",
+        "🍿 Ganas acumuladas de volver a: {show_title} ({range_label})",
+        "🎬 Temporada {season_num} en marcha: {show_title} ({range_label})",
+        "🔄 Retomando donde lo dejamos con: {show_title} ({range_label})",
+        "🍿 Qué ganas le tenía a esta temporada {season_num} de: {show_title} ({range_label})",
+        "📺 De vuelta a la carga con la temporada {season_num} de: {show_title} ({range_label})"
+      ],
+      "penultimate": [
+        "⚡ Tensión máxima a las puertas del final de: {show_title} ({range_label})",
+        "👀 A un solo capítulo de terminar la temporada de: {show_title} ({range_label})",
+        "🍿 Penúltimo capítulo visto, la cosa arde en: {show_title} ({range_label})",
+        "🔥 Todo listo para la traca final de: {show_title} ({range_label})",
+        "😱 Dejándolo todo preparado para el desenlace de: {show_title} ({range_label})",
+        "🎬 No sé si estoy preparado para el final de: {show_title} ({range_label})"
+      ],
+      "final_stretch": [
+        "🔥 Recta final de la temporada {season_num} de: {show_title} ({range_label})",
+        "👀 Huele a desenlace en: {show_title} ({range_label})",
+        "🍿 Ya casi la tengo finiquitada: {show_title} ({range_label})",
+        "⚡ Tramo definitivo de la temporada {season_num} de: {show_title} ({range_label})",
+        "🎯 Los cabos empiezan a atarse en: {show_title} ({range_label})"
+      ],
+      "mid_season": [
+        "🎯 Justo en el ecuador de la temporada {season_num} de: {show_title} ({range_label})",
+        "⚖️ Mitad de temporada superada en: {show_title} ({range_label})",
+        "📈 Pasando el ecuador con buen ritmo: {show_title} ({range_label})",
+        "🎬 Temporada {season_num} cruzando su mitad: {show_title} ({range_label})"
+      ]
+    },
+    "time_of_day": {
+      "night": [
+        "🌙 A estas horas y yo devorando: {show_title} ({range_label})",
+        "🦉 Insomnio bien aprovechado con: {show_title} ({range_label})",
+        "✨ Un capítulo más y a dormir (mentira): {show_title} ({range_label})",
+        "☕ Sesión golfa de madrugada: {show_title} ({range_label})",
+        "🌙 Trasnochando a gusto con: {show_title} ({range_label})",
+        "💤 Mañana me arrepentiré, pero he visto: {show_title} ({range_label})",
+        "🕯️ Nadie despierto, momento de paz con: {show_title} ({range_label})",
+        "🌌 La noche se presta a maratonear: {show_title} ({range_label})"
+      ],
+      "morning": [
+        "☕ Empezando el día con buen ritmo y: {show_title} ({range_label})",
+        "🥐 Desayuno y ración seriéfila con: {show_title} ({range_label})",
+        "☀️ Sesión matutina para arrancar con energía: {show_title} ({range_label})",
+        "☕ Café en mano devorando: {show_title} ({range_label})",
+        "🌅 Madrugar para ver un capítulo de: {show_title} ({range_label})"
+      ],
+      "afternoon": [
+        "☕ Empezando el día con buen ritmo y: {show_title} ({range_label})",
+        "🥐 Desayuno y ración seriéfila con: {show_title} ({range_label})",
+        "☀️ Sesión matutina para arrancar con energía: {show_title} ({range_label})",
+        "☕ Café en mano devorando: {show_title} ({range_label})",
+        "🌅 Madrugar para ver un capítulo de: {show_title} ({range_label})"
+      ],
+      "evening": [
+        "🛋️ Sesión de sobremesa bien aprovechada con: {show_title} ({range_label})",
+        "☕ Desconexión de tarde acompañada de: {show_title} ({range_label})",
+        "🌤️ Tarde perfecta de relax con: {show_title} ({range_label})",
+        "🛋️ Sofá, tranquilidad y un ratito de: {show_title} ({range_label})",
+        "🍿 La sobremesa entra mejor con: {show_title} ({range_label})"
+      ]
+    },
+    "day_of_week": {
+      "monday": [
+        "🛡️ Combatiendo el lunes con: {show_title} ({range_label})",
+        "☕ La mejor medicina para empezar la semana: {show_title} ({range_label})",
+        "📺 El lunes se hace más llevadero con: {show_title} ({range_label})"
+      ],
+      "midweek": [
+        "🐪 Superando el ecuador de la semana con: {show_title} ({range_label})",
+        "⚡ Ya casi es fin de semana, calentando con: {show_title} ({range_label})",
+        "📺 Cargando pilas entre semana con: {show_title} ({range_label})"
+      ],
+      "friday": [
+        "🐪 Superando el ecuador de la semana con: {show_title} ({range_label})",
+        "⚡ Ya casi es fin de semana, calentando con: {show_title} ({range_label})",
+        "📺 Cargando pilas entre semana con: {show_title} ({range_label})"
+      ],
+      "saturday": [
+        "🐪 Superando el ecuador de la semana con: {show_title} ({range_label})",
+        "⚡ Ya casi es fin de semana, calentando con: {show_title} ({range_label})",
+        "📺 Cargando pilas entre semana con: {show_title} ({range_label})"
+      ],
+      "sunday": [
+        "🍿 Sábado de relax y maratoneo con: {show_title} ({range_label})",
+        "✨ Aprovechando el sábado como se debe: {show_title} ({range_label})",
+        "🛋️ Sin prisas ni alarmas, disfrutando de: {show_title} ({range_label})"
+      ]
+    },
+    "general": [
+      "📺 He visto: {show_title} ({range_label})",
+      "🍿 Continuando con: {show_title} ({range_label})",
+      "👀 Sigo enganchado a: {show_title} ({range_label})",
+      "📺 Avanzando en la temporada {season_num} de: {show_title} ({range_label})",
+      "✨ Un poco más de: {show_title} ({range_label})",
+      "🛋️ Sesión seriéfila con: {show_title} ({range_label})",
+      "🎬 Tachando episodios de: {show_title} ({range_label})",
+      "🍿 Ritmo constante con: {show_title} ({range_label})",
+      "📺 Al día con: {show_title} ({range_label})",
+      "☕ Dosis diaria de: {show_title} ({range_label})",
+      "🎯 Sumando capítulos al registro: {show_title} ({range_label})",
+      "🍿 Progresando a buen paso en: {show_title} ({range_label})",
+      "🎬 Cada vez más metido en la trama de: {show_title} ({range_label})",
+      "🛋️ Buen rato de entretenimiento con: {show_title} ({range_label})"
+    ]
+  },
+  "movies": {
+    "top_rating": [
+      "🏆 Vaya joyita acabo de ver: {movie_title}{year_str}",
+      "✨ Cine con mayúsculas: {movie_title}{year_str}",
+      "🍿 Peliculón imprescindible: {movie_title}{year_str}",
+      "🌟 Directa a mis favoritas: {movie_title}{year_str}",
+      "🎬 Qué maravilla de película: {movie_title}{year_str}",
+      "👏 Hacía tiempo que una peli no me sorprendía tanto: {movie_title}{year_str}",
+      "💎 Una auténtica obra maestra: {movie_title}{year_str}",
+      "🔥 Cine del que deja huella: {movie_title}{year_str}"
+    ],
+    "low_rating": [
+      "🫠 Bueno... una y no más: {movie_title}{year_str}",
+      "📉 No ha sido la mejor elección: {movie_title}{year_str}",
+      "🎬 Película vista (bastante olvidable): {movie_title}{year_str}",
+      "🤷‍♂️ Pasable sin más, no me ha convencido: {movie_title}{year_str}",
+      "😴 Bastante decepcionante: {movie_title}{year_str}",
+      "🥱 Esperaba bastante más de: {movie_title}{year_str}"
+    ],
+    "era": {
+      "classic": [
+        "📼 Rescatando clásicos: {movie_title}{year_str}",
+        "🕰️ Viaje al cine del siglo pasado: {movie_title}{year_str}",
+        "📽️ Revisando una joya retro: {movie_title}{year_str}",
+        "🎬 Qué bien envejecen algunas pelis: {movie_title}{year_str}",
+        "🎞️ Clasicazo que nunca pasa de moda: {movie_title}{year_str}",
+        "📼 Cine de otra época que da gusto volver a ver: {movie_title}{year_str}"
+      ],
+      "recent": [
+        "🆕 Poniéndome al día con los estrenos: {movie_title}{year_str}",
+        "🍿 Sesión de estreno reciente: {movie_title}{year_str}",
+        "🎬 Por fin le he podido echar el guante a: {movie_title}{year_str}",
+        "✨ Hoy ha tocado estreno con: {movie_title}{year_str}",
+        "🎟️ Cine fresco recién salido del horno: {movie_title}{year_str}"
+      ]
+    },
+    "time_of_day": {
+      "night": [
+        "🌙 Cine de madrugada: {movie_title}{year_str}",
+        "🦉 Sesión golfa nocturna: {movie_title}{year_str}",
+        "🍿 Película a deshoras: {movie_title}{year_str}",
+        "✨ Cerrando la noche con cine: {movie_title}{year_str}",
+        "🌌 Tranquilidad nocturna y una buena peli: {movie_title}{year_str}"
+      ],
+      "afternoon": [
+        "🛋️ Tarde de sofá y buena peli: {movie_title}{year_str}",
+        "☕ Cine de sobremesa bien aprovechado: {movie_title}{year_str}",
+        "🍿 Desconexión de tarde viendo: {movie_title}{year_str}"
+      ],
+      "evening": [
+        "🍽️ Cena y película, plan perfecto: {movie_title}{year_str}",
+        "🌙 Sesión de cine nocturna con: {movie_title}{year_str}",
+        "🍿 Disfrutando de la noche con: {movie_title}{year_str}"
+      ]
+    },
+    "weekend": [
+      "🍿 Sesión de cine de fin de semana: {movie_title}{year_str}",
+      "🛋️ Sofá, manta y buena peli: {movie_title}{year_str}",
+      "✨ Tarde de cine para desconectar con: {movie_title}{year_str}",
+      "🎬 Planazo de finde con palomitas: {movie_title}{year_str}"
+    ],
+    "general": [
+      "🎬 He visto: {movie_title}{year_str}",
+      "🍿 Sesión de cine: {movie_title}{year_str}",
+      "🎥 Película vista: {movie_title}{year_str}",
+      "✨ Hoy ha tocado peli: {movie_title}{year_str}",
+      "🛋️ Tarde de sofá y cine con: {movie_title}{year_str}",
+      "🎞️ Ficha completada en {tracker_name}: {movie_title}{year_str}",
+      "🎬 Otra película tachada de la lista: {movie_title}{year_str}",
+      "🍿 Desconectando con: {movie_title}{year_str}",
+      "🎥 Disfrutando del séptimo arte con: {movie_title}{year_str}",
+      "🛋️ Buen rato de cine con: {movie_title}{year_str}",
+      "🎬 Una historia interesante: {movie_title}{year_str}",
+      "🍿 Tiempo bien invertido viendo: {movie_title}{year_str}"
+    ]
+  },
+  "labels": {
+    "rating_show": "⭐ Mi valoración: {user_rating}/10",
+    "rating_movie": "⭐ Mi valoración: {user_rating}/10"
+  }
+}
