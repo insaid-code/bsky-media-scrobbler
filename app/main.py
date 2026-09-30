@@ -163,8 +163,9 @@ def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provid
         if rating_line:
             lines.append(rating_line)
 
+        cine_tag = "#Cinema" if BSKY_LANG == "en" else "#Cine"
         tag = clean_hashtag(title)
-        tags_line = f"#Cine {tag} {get_platform_tags(LINK_DESTINATION, provider=provider)}".strip()
+        tags_line = f"{cine_tag} {tag} {get_platform_tags(LINK_DESTINATION, provider=provider)}".strip()
         lines.append(f"\n{tags_line}")
 
         post_text = "\n".join(lines)
@@ -308,8 +309,18 @@ def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyP
         log.info("Publicados %d episodio(s) de %s en Bluesky.", len(new_keys), media_type)
 
 
-def check_triggers(stats_mgr: StatsManager):
+def check_triggers(stats_mgr: StatsManager) -> bool:
     """Comprueba archivos de trigger manual en /data/ para ejecuciones inmediatas."""
+    # 0. Trigger de sincronización forzada bajo demanda
+    trig_sync = "/data/trigger_sync"
+    if os.path.exists(trig_sync):
+        log.info("🔔 [TRIGGER] Detectada petición forzada de Sincronización Inmediata.")
+        try:
+            os.remove(trig_sync)
+        except Exception:
+            pass
+        return True
+
     # 1. Trigger semanal forzado
     trig_weekly = "/data/trigger_weekly"
     if os.path.exists(trig_weekly):
@@ -360,6 +371,7 @@ def check_triggers(stats_mgr: StatsManager):
             stats_mgr.check_fun_fact(datetime.now(), force=True)
         except Exception as e:
             log.error("Error al ejecutar trigger fun_fact: %s", e, exc_info=True)
+    return False
 
 
 def main():
@@ -523,7 +535,8 @@ def main():
         log.info("Próxima comprobación en %d minutos.", POLL_INTERVAL_MINUTES)
         sleep_until = time.time() + (POLL_INTERVAL_MINUTES * 60)
         while time.time() < sleep_until:
-            check_triggers(stats_mgr)
+            if check_triggers(stats_mgr):
+                break
             time.sleep(5)
 
 
