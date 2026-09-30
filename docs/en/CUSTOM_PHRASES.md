@@ -45,7 +45,7 @@ You can craft phrases using standard `{variable}` placeholders. Safe interpolati
 | `{user_rating}` | Your rating out of 10 (if rated) | `9.5` |
 | `{months}` | Months the show was paused (for backlog rescues) | `22` |
 | `{years}` | Years the show was paused | `1.8` |
-| `{tracker_name}` | Name of the tracker platform | `SIMKL`, `WeTrakr` |
+| `{tracker_name}` | Name of the tracker platform | `WeTrakr`, `SIMKL` |
 
 ### Movie Variables (`movies`)
 | Variable | Description | Example |
@@ -54,7 +54,7 @@ You can craft phrases using standard `{variable}` placeholders. Safe interpolati
 | `{year}` | Release year of the movie | `2024` |
 | `{year_str}` | Formatted year in parentheses | ` (2024)` |
 | `{user_rating}` | Your rating out of 10 | `9` |
-| `{tracker_name}` | Name of the tracker platform | `SIMKL`, `WeTrakr` |
+| `{tracker_name}` | Name of the tracker platform | `WeTrakr`, `SIMKL` |
 
 ---
 

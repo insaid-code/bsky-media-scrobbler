@@ -14,13 +14,13 @@
   <img src="https://img.shields.io/badge/Llicència-MIT-green.svg" alt="Llicència MIT" />
 </p>
 
-Bot autònom en Python per a Docker que monitoritza la teva activitat a les teves plataformes de seguiment preferides (**SIMKL**, **WeTrakr**) i la publica de forma enriquida a **Bluesky** amb targetes externes cap a **TMDB**, collages visuals en alta definició, balanços periòdics i comptador de ratxes.
+Bot autònom en Python per a Docker que monitoritza la teva activitat a les teves plataformes de seguiment preferides (**WeTrakr**, **SIMKL**) i la publica de forma enriquida a **Bluesky** amb targetes externes cap a **TMDB**, collages visuals en alta definició, balanços periòdics i comptador de ratxes.
 
 ---
 
 ## ✨ Característiques Principals
 
-* 🔌 **Multi-Tracker Universal:** Suport natiu per a **SIMKL** i **WeTrakr** seleccionable mitjançant variable d'entorn (`TRACKER_PROVIDER`).
+* 🔌 **Multi-Tracker Universal:** Suport natiu per a **WeTrakr** i **SIMKL** seleccionable mitjançant variable d'entorn (`TRACKER_PROVIDER`).
 * 📦 **Agrupació Intel·ligent de Maratons:** Si mires diversos capítols consecutius (ex. `T01E01–E03`), els agrupa en un únic post net per no saturar el teu timeline.
 * 🎬 **Fitxes Enriquides (TMDB):** Targetes interactives externes cap a The Movie Database amb caràtula oficial en alta definició.
 * ✍️ **Motor de Frases i Multi-idioma (i18n):**
@@ -47,7 +47,7 @@ Per consultar guies detallades pas a pas sobre cada mòdul del projecte:
 * ⚙️ **[Guia de Configuració i Variables d'Entorn (Espanyol)](docs/es/CONFIGURACION.md) / [English](docs/en/CONFIGURATION.md):** Paràmetres del `.env`, estructura de volums, permisos i plantilla per a Dockge/Compose.
 * ✍️ **[Motor de Frases Personalitzades (Espanyol)](docs/es/FRASES_PERSONALIZADAS.md) / [English](docs/en/CUSTOM_PHRASES.md):** Com crear el teu propi `custom_phrases.json`, variables disponibles (`{show_title}`, `{season_num}`...), modes suma vs reemplaçament i recàrrega en calent.
 * 📊 **[Estadístiques, Informes i Collages Visuals (Espanyol)](docs/es/ESTADISTICAS.md) / [English](docs/en/STATISTICS.md):** Calendari de balanços, especificacions d'imatge de Pillow i configuració a OliveTin.
-* 🔌 **[Proveïdors de Seguiment: SIMKL i WeTrakr (Espanyol)](docs/es/PROVEEDORES.md) / [English](docs/en/PROVIDERS.md):** Obtenció d'API keys, flux d'autorització per codi PIN (`Device Auth`) i renovació automàtica de tokens.
+* 🔌 **[Proveïdors de Seguiment: WeTrakr i SIMKL (Espanyol)](docs/es/PROVEEDORES.md) / [English](docs/en/PROVIDERS.md):** Obtenció d'API keys, flux d'autorització per codi PIN (`Device Auth`) i renovació automàtica de tokens.
 
 ---
 
@@ -63,8 +63,9 @@ mkdir -p data
 
 ### 2. Configurar credencials a `.env`
 ```env
-TRACKER_PROVIDER=simkl
-SIMKL_CLIENT_ID=el_teu_simkl_client_id
+TRACKER_PROVIDER=wetrakr
+WETRAKR_CLIENT_ID=el_teu_wetrakr_client_id
+WETRAKR_CLIENT_SECRET=el_teu_wetrakr_client_secret
 BSKY_HANDLE=el-teu-compte.bsky.social
 BSKY_APP_PASSWORD=la_teva_app_password
 BSKY_LANG=ca
@@ -83,7 +84,7 @@ docker compose up -d
 * **Python 3.12**
 * [atproto](https://github.com/MarshalX/atproto) - SDK oficial per al protocol AT de Bluesky.
 * [Pillow (PIL)](https://python-pillow.org/) - Motor de composició gràfica de collages en alta definició.
-* [Requests](https://requests.readthedocs.io/) - Client HTTP per al consum d'APIs de SIMKL, WeTrakr i TMDB.
+* [Requests](https://requests.readthedocs.io/) - Client HTTP per al consum d'APIs de WeTrakr, SIMKL i TMDB.
 
 ---
 
@@ -96,5 +97,5 @@ Aquest projecte es distribueix sota la llicència [MIT](LICENSE).
 ## 🙏 Crèdits i Agraïments
 
 * Inspirat originalment en el projecte [SIMKLTrackerBot](https://github.com/donnyfly/SIMKLTrackerBot) de **@donnyfly**.
-* A les plataformes **SIMKL** i **WeTrakr** per les seves APIs i serveis de seguiment.
+* A les plataformes **WeTrakr** i **SIMKL** per les seves APIs i serveis de seguiment.
 * A **The Movie Database (TMDB)** per les seves metadades i caràtules en alta definició.

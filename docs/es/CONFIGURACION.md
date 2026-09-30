@@ -9,17 +9,17 @@ Este documento detalla todas las variables de entorno, opciones de personalizaci
 | Variable | Tipo | Por Defecto | Descripción |
 | :--- | :---: | :---: | :--- |
 | `DRY_RUN` | Booleano | `false` | Si se establece en `true`, simula la generación de posts y collages en los logs sin publicar en Bluesky. Ideal para pruebas iniciales. |
-| `TRACKER_PROVIDER` | Texto | `simkl` | Plataforma de seguimiento activa. Valores admitidos: `simkl` o `wetrakr`. |
-| `SIMKL_CLIENT_ID` | Texto | — | Client ID de la aplicación creada en SIMKL Developers. Requerido si `TRACKER_PROVIDER=simkl`. |
-| `SIMKL_USER_TOKEN` | Texto | *(opcional)* | Token de acceso del usuario en SIMKL. Si se omite, el bot iniciará el flujo interactivo de autorización por código PIN (`Device Auth`). |
+| `TRACKER_PROVIDER` | Texto | `wetrakr` | Plataforma de seguimiento activa. Valores admitidos: `wetrakr` o `simkl`. |
 | `WETRAKR_CLIENT_ID` | Texto | — | Client ID / API Key de WeTrakr. Requerido si `TRACKER_PROVIDER=wetrakr`. |
 | `WETRAKR_CLIENT_SECRET` | Texto | *(opcional)* | Client Secret de WeTrakr. |
-| `WETRAKR_ACCESS_TOKEN` | Texto | *(opcional)* | Token de acceso OAuth de WeTrakr. Si se omite, se inicia el flujo por PIN. |
+| `WETRAKR_ACCESS_TOKEN` | Texto | *(opcional)* | Token de acceso OAuth de WeTrakr. Si se omite, se inicia el flujo interactivo por PIN (`Device Auth`). |
+| `SIMKL_CLIENT_ID` | Texto | — | Client ID de la aplicación creada en SIMKL Developers. Requerido si `TRACKER_PROVIDER=simkl`. |
+| `SIMKL_USER_TOKEN` | Texto | *(opcional)* | Token de acceso del usuario en SIMKL. Si se omite, el bot iniciará el flujo interactivo de autorización por código PIN (`Device Auth`). |
 | `BSKY_HANDLE` | Texto | — | Identificador de tu cuenta en Bluesky (ej. `mi-cuenta.bsky.social`). |
 | `BSKY_APP_PASSWORD` | Texto | — | Contraseña de aplicación generada en Bluesky (*Ajustes ➜ Privacidad y seguridad ➜ Contraseñas de aplicación*). Nunca uses tu contraseña principal. |
 | `BSKY_LANG` | Texto | `es` | Código de idioma para los posts (ej. `es`, `en`). Aplica la etiqueta AT-Protocol `langs` y selecciona el archivo base de frases (`locales/es.json`). |
 | `POLL_INTERVAL_MINUTES` | Entero | `90` | Frecuencia de sondeo en minutos. Un valor de `90` minutos es el óptimo recomendado para permitir agrupar episodios vistos en sesión continua (maratón). |
-| `LINK_DESTINATION` | Texto | `tmdb` | Destino de las tarjetas enriquecidas (`external embeds`). Valores: `tmdb` (The Movie Database), `simkl` o `imdb`. |
+| `LINK_DESTINATION` | Texto | `tmdb` | Destino de las tarjetas enriquecidas (`external embeds`). Valores: `tmdb` (The Movie Database), `wetrakr`, `simkl` o `imdb`. |
 | `TZ` | Texto | `Europe/Madrid` | Zona horaria del sistema. Esencial para calcular correctamente las franjas horarias de madrugada, mañana, sobremesa, los días de la semana y los cierres de balances. |
 | `PUID` / `PGID` | Entero | `1026` / `100` | Identificadores de usuario y grupo para la gestión de permisos en volúmenes persistentes en sistemas NAS (Synology, Unraid, TrueNAS). |
 
@@ -62,11 +62,11 @@ services:
       - PGID=100
       - PYTHONUNBUFFERED=1
       - DRY_RUN=${DRY_RUN:-false}
-      - TRACKER_PROVIDER=${TRACKER_PROVIDER:-simkl}
-      - SIMKL_CLIENT_ID=${SIMKL_CLIENT_ID}
-      - SIMKL_USER_TOKEN=${SIMKL_USER_TOKEN}
+      - TRACKER_PROVIDER=${TRACKER_PROVIDER:-wetrakr}
       - WETRAKR_CLIENT_ID=${WETRAKR_CLIENT_ID}
       - WETRAKR_CLIENT_SECRET=${WETRAKR_CLIENT_SECRET}
+      - SIMKL_CLIENT_ID=${SIMKL_CLIENT_ID}
+      - SIMKL_USER_TOKEN=${SIMKL_USER_TOKEN}
       - BSKY_HANDLE=${BSKY_HANDLE}
       - BSKY_APP_PASSWORD=${BSKY_APP_PASSWORD}
       - BSKY_LANG=${BSKY_LANG:-es}

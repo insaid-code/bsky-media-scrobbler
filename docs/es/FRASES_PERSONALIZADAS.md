@@ -45,7 +45,7 @@ Puedes redactar cualquier frase utilizando marcadores de posición `{variable}`.
 | `{user_rating}` | Tu nota sobre 10 (si la has calificado) | `9.5` |
 | `{months}` | Meses que la serie estuvo en pausa (en rescates de backlog) | `22` |
 | `{years}` | Años que la serie estuvo en pausa | `1.8` |
-| `{tracker_name}` | Nombre de la plataforma de seguimiento | `SIMKL`, `WeTrakr` |
+| `{tracker_name}` | Nombre de la plataforma de seguimiento | `WeTrakr`, `SIMKL` |
 
 ### Variables en Películas (`movies`)
 | Variable | Descripción | Ejemplo |
@@ -54,7 +54,7 @@ Puedes redactar cualquier frase utilizando marcadores de posición `{variable}`.
 | `{year}` | Año de estreno de la película | `2024` |
 | `{year_str}` | Año formateado entre paréntesis | ` (2024)` |
 | `{user_rating}` | Tu nota sobre 10 | `9` |
-| `{tracker_name}` | Nombre de la plataforma de seguimiento | `SIMKL`, `WeTrakr` |
+| `{tracker_name}` | Nombre de la plataforma de seguimiento | `WeTrakr`, `SIMKL` |
 
 ---
 

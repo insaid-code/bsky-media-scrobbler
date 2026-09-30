@@ -1,15 +1,36 @@
-# 🔌 Supported Trackers: SIMKL and WeTrakr
+# 🔌 Supported Trackers: WeTrakr and SIMKL
 
-`bsky-media-scrobbler` seamlessly integrates with two leading media tracking platforms: **SIMKL** and **WeTrakr**.
+`bsky-media-scrobbler` seamlessly integrates with two leading media tracking platforms: **WeTrakr** and **SIMKL**.
 
 Switch between providers via your environment file:
 ```env
-TRACKER_PROVIDER=simkl    # or 'wetrakr'
+TRACKER_PROVIDER=wetrakr    # or 'simkl'
 ```
 
 ---
 
-## 1. SIMKL (`TRACKER_PROVIDER=simkl`)
+## 1. WeTrakr (`TRACKER_PROVIDER=wetrakr`)
+
+WeTrakr is a modern, privacy-focused media tracker using OAuth2 / Device Authorization Grant (RFC 8628).
+
+### Getting Credentials
+1. Register or sign in to [WeTrakr](https://wetrakr.com).
+2. Create an application in your developer settings to get your `WETRAKR_CLIENT_ID` and `WETRAKR_CLIENT_SECRET`.
+
+### Device Authorization Flow
+1. When starting with `TRACKER_PROVIDER=wetrakr` without a stored token, the scrobbler requests a device code.
+2. Check your Docker logs for the activation prompt:
+  ```
+  👉 Visit: https://wetrakr.com/activate
+  👉 Enter PIN: WTRK-7890
+  ```
+3. Authorize the application in your browser.
+4. The scrobbler automatically polls, receives the `access_token` and `refresh_token`, and stores them securely in `data/state.json`.
+5. Tokens are refreshed automatically before expiration with zero manual intervention.
+
+---
+
+## 2. SIMKL (`TRACKER_PROVIDER=simkl`)
 
 SIMKL offers a mature REST API for tracking TV episodes, anime, and movies.
 
@@ -30,30 +51,9 @@ SIMKL offers a mature REST API for tracking TV episodes, anime, and movies.
 
 ---
 
-## 2. WeTrakr (`TRACKER_PROVIDER=wetrakr`)
-
-WeTrakr is a modern, privacy-focused media tracker using OAuth2 / Device Authorization Grant (RFC 8628).
-
-### Getting Credentials
-1. Register or sign in to WeTrakr.
-2. Create an application in your developer settings to get your `WETRAKR_CLIENT_ID` and `WETRAKR_CLIENT_SECRET`.
-
-### Device Authorization Flow
-1. When starting with `TRACKER_PROVIDER=wetrakr` without a stored token, the scrobbler requests a device code.
-2. Check your Docker logs for the activation prompt:
-  ```
-  👉 Visit: https://wetrakr.com/activate
-  👉 Enter PIN: WTRK-7890
-  ```
-3. Authorize the application in your browser.
-4. The scrobbler automatically polls, receives the `access_token` and `refresh_token`, and stores them securely in `data/state.json`.
-5. Tokens are refreshed automatically before expiration with zero manual intervention.
-
----
-
 ## 🔄 Feature Parity Matrix
 
-| Feature | SIMKL | WeTrakr |
+| Feature | WeTrakr | SIMKL |
 | :--- | :---: | :---: |
 | TV episode scrobbling | ✅ | ✅ |
 | Binge grouping (`S01E01-E03`) | ✅ | ✅ |

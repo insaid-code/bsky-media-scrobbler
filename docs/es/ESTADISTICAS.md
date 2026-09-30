@@ -33,44 +33,44 @@ El motor genera automáticamente imágenes compuestas optimizadas para Bluesky (
 
 ## ⚡ Disparadores Manuales bajo Demanda (`Triggers`)
 
-No necesitas esperar al lunes o al día 1 para probar o previsualizar un balance. El bucle de [`app/main.py`](file:///Volumes/docker/bsky-media-scrobbler/app/main.py#L310-L352) comprueba cada 5 segundos la presencia de archivos señal en `/data`:
+No necesitas esperar al lunes o al día 1 para probar o previsualizar un balance. El bucle de `app/main.py` comprueba cada 5 segundos la presencia de archivos señal en `/data`:
 
 ### 1. Forzar Resumen Semanal
 ```bash
 # Cuadrícula estándar 3x3
-echo "3x3" > /Volumes/docker/bsky-media-scrobbler/data/trigger_weekly
+echo "3x3" > data/trigger_weekly
 
 # O cuadrícula compacta 2x2
-echo "2x2" > /Volumes/docker/bsky-media-scrobbler/data/trigger_weekly
+echo "2x2" > data/trigger_weekly
 ```
 
 ### 2. Forzar Resumen Mensual
 ```bash
 # Cuadrícula estándar 3x3
-echo "3x3" > /Volumes/docker/bsky-media-scrobbler/data/trigger_monthly
+echo "3x3" > data/trigger_monthly
 
 # O cuadrícula compacta 2x2
-echo "2x2" > /Volumes/docker/bsky-media-scrobbler/data/trigger_monthly
+echo "2x2" > data/trigger_monthly
 ```
 
 ### 3. Forzar Curiosidad / Fun Fact
 ```bash
-touch /Volumes/docker/bsky-media-scrobbler/data/trigger_fun_fact
+touch data/trigger_fun_fact
 ```
 
-> **Comportamiento automático:** En cuanto el contenedor detecta el archivo señal, ejecuta la tarea inmediatamente, genera el informe con su imagen, lo publica en Bluesky y elimina el archivo para evitar re-ejecuciones.
+> **Comportamiento automático:** En cuanto el contenedor detecta el archivo señal, ejecuta la tarea inmediatamente, genera el informe con su imagen, lo publica en Bluesky y elimina el archivo para evitar re-ejecuciones. También puedes crearlos mediante Docker: `docker exec bsky-media-scrobbler touch /data/trigger_fun_fact`.
 
 ---
 
 ## 🎛️ Integración con Paneles de Control (OliveTin / HomeLab)
 
-Si dispones de un panel de acciones web como **OliveTin** (`cmd.insaid.net`), puedes agregar botones directos a tu archivo `config.yaml` para disparar estas funciones con un solo toque:
+Si dispones de un panel de acciones web como **OliveTin**, puedes agregar botones directos a tu archivo `config.yaml` para disparar estas funciones con un solo toque:
 
 ```yaml
   # --- BLUESKY MEDIA SCROBBLER ---
   - title: "🦋 Bluesky: Forzar Resumen Mensual"
     icon: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'><path fill='#1185fe' d='M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566 1.018 1.561 1.748 1.561 3.254c0 3.28 1.83 13.435 8.439 13.435 3.398 0 4.887-2.98 5.86-5.889z'/></svg>"
-    shell: "echo '{{ grid }}' > /volume1/docker/bsky-media-scrobbler/data/trigger_monthly && echo 'Disparador mensual enviado con collage {{ grid }}'"
+    shell: "echo '{{ grid }}' > /ruta/a/bsky-media-scrobbler/data/trigger_monthly && echo 'Disparador mensual enviado con collage {{ grid }}'"
     timeout: 30
     arguments:
       - name: grid
@@ -83,6 +83,6 @@ Si dispones de un panel de acciones web como **OliveTin** (`cmd.insaid.net`), pu
 
   - title: "🦋 Bluesky: Forzar Curiosidad / Fun Fact"
     icon: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'><path fill='#f59e0b' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/></svg>"
-    shell: "touch /volume1/docker/bsky-media-scrobbler/data/trigger_fun_fact && echo 'Petición de Curiosidad / Fun Fact enviada al scrobbler.'"
+    shell: "touch /ruta/a/bsky-media-scrobbler/data/trigger_fun_fact && echo 'Petición de Curiosidad / Fun Fact enviada al scrobbler.'"
     timeout: 15
 ```

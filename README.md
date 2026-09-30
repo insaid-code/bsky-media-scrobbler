@@ -14,13 +14,13 @@
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License" />
 </p>
 
-An autonomous Python container for Docker that monitors your media activity on your favorite tracking platforms (**SIMKL**, **WeTrakr**) and publishes enriched scrobbles to **Bluesky** with **TMDB** external cards, high-definition poster collages, closed reporting periods, and daily viewing streak counters.
+An autonomous Python container for Docker that monitors your media activity on your favorite tracking platforms (**WeTrakr**, **SIMKL**) and publishes enriched scrobbles to **Bluesky** with **TMDB** external cards, high-definition poster collages, closed reporting periods, and daily viewing streak counters.
 
 ---
 
 ## ✨ Key Features
 
-* 🔌 **Universal Multi-Tracker:** Native support for **SIMKL** and **WeTrakr** via the `TRACKER_PROVIDER` environment variable.
+* 🔌 **Universal Multi-Tracker:** Native support for **WeTrakr** and **SIMKL** via the `TRACKER_PROVIDER` environment variable.
 * 📦 **Smart Binge Grouping:** Automatically groups back-to-back episodes (e.g., `S01E01–E03`) into a single post to keep your Bluesky timeline uncluttered.
 * 🎬 **Enriched Cards (TMDB):** Generates interactive external cards directed to The Movie Database with high-resolution poster artwork.
 * ✍️ **Dynamic Phrasing & Native Multi-Language (i18n):**
@@ -47,7 +47,7 @@ For in-depth guides, variable references, and configuration walkthroughs:
 * ⚙️ **[Configuration & Deployment Guide (`docs/en/CONFIGURATION.md`)](docs/en/CONFIGURATION.md):** Complete `.env` parameters, volume layout, NAS permissions (`PUID`/`PGID`), and modern Compose v2 template.
 * ✍️ **[Custom Phrases & Localization Guide (`docs/en/CUSTOM_PHRASES.md`)](docs/en/CUSTOM_PHRASES.md):** Template variables (`{show_title}`, `{season_num}`...), extension mode vs exclusive override mode, and hot-reload mechanism.
 * 📊 **[Statistics, Balances & Collages (`docs/en/STATISTICS.md`)](docs/en/STATISTICS.md):** Pillow collage dimensions, calculation logic, and OliveTin dashboard setup.
-* 🔌 **[Tracker Providers: SIMKL & WeTrakr (`docs/en/PROVIDERS.md`)](docs/en/PROVIDERS.md):** API key setup, PIN device authorization flows, and automatic token management.
+* 🔌 **[Tracker Providers: WeTrakr & SIMKL (`docs/en/PROVIDERS.md`)](docs/en/PROVIDERS.md):** API key setup, PIN device authorization flows, and automatic token management.
 
 ---
 
@@ -63,8 +63,9 @@ mkdir -p data
 
 ### 2. Configure credentials in `.env`
 ```env
-TRACKER_PROVIDER=simkl
-SIMKL_CLIENT_ID=your_simkl_client_id
+TRACKER_PROVIDER=wetrakr
+WETRAKR_CLIENT_ID=your_wetrakr_client_id
+WETRAKR_CLIENT_SECRET=your_wetrakr_client_secret
 BSKY_HANDLE=your-account.bsky.social
 BSKY_APP_PASSWORD=your_app_password
 BSKY_LANG=en
@@ -85,7 +86,7 @@ docker compose up -d
 * **Python 3.12**
 * [atproto](https://github.com/MarshalX/atproto) - Official AT Protocol SDK for Bluesky.
 * [Pillow (PIL)](https://python-pillow.org/) - Graphic composition engine for high-resolution collages.
-* [Requests](https://requests.readthedocs.io/) - HTTP client for SIMKL, WeTrakr, and TMDB APIs.
+* [Requests](https://requests.readthedocs.io/) - HTTP client for WeTrakr, SIMKL, and TMDB APIs.
 
 ---
 
@@ -98,5 +99,5 @@ Distributed under the [MIT License](LICENSE).
 ## 🙏 Credits & Acknowledgments
 
 * Originally inspired by [SIMKLTrackerBot](https://github.com/donnyfly/SIMKLTrackerBot) by **@donnyfly**.
-* Metadata and tracking services provided by **SIMKL** and **WeTrakr**.
+* Metadata and tracking services provided by **WeTrakr** and **SIMKL**.
 * Artwork and movie metadata powered by **The Movie Database (TMDB)**.

@@ -9,17 +9,17 @@ This document details all environment variables, customization options, and depl
 | Variable | Type | Default | Description |
 | :--- | :---: | :---: | :--- |
 | `DRY_RUN` | Boolean | `false` | When set to `true`, simulates post and collage generation in container logs without publishing to Bluesky. Recommended for initial testing. |
-| `TRACKER_PROVIDER` | String | `simkl` | Active media tracker platform. Supported values: `simkl` or `wetrakr`. |
-| `SIMKL_CLIENT_ID` | String | — | Client ID from SIMKL Developers. Required if `TRACKER_PROVIDER=simkl`. |
-| `SIMKL_USER_TOKEN` | String | *(optional)* | SIMKL user access token. If omitted, the bot starts an interactive PIN code authorization flow (`Device Auth`). |
+| `TRACKER_PROVIDER` | String | `wetrakr` | Active media tracker platform. Supported values: `wetrakr` or `simkl`. |
 | `WETRAKR_CLIENT_ID` | String | — | WeTrakr Client ID / API Key. Required if `TRACKER_PROVIDER=wetrakr`. |
 | `WETRAKR_CLIENT_SECRET` | String | *(optional)* | WeTrakr Client Secret. |
-| `WETRAKR_ACCESS_TOKEN` | String | *(optional)* | WeTrakr OAuth access token. If omitted, PIN device authorization flow starts. |
+| `WETRAKR_ACCESS_TOKEN` | String | *(optional)* | WeTrakr OAuth access token. If omitted, interactive PIN device authorization flow starts (`Device Auth`). |
+| `SIMKL_CLIENT_ID` | String | — | Client ID from SIMKL Developers. Required if `TRACKER_PROVIDER=simkl`. |
+| `SIMKL_USER_TOKEN` | String | *(optional)* | SIMKL user access token. If omitted, the bot starts an interactive PIN code authorization flow (`Device Auth`). |
 | `BSKY_HANDLE` | String | — | Your Bluesky handle (e.g., `my-account.bsky.social`). |
 | `BSKY_APP_PASSWORD` | String | — | Bluesky App Password generated from *Settings ➜ Privacy and Security ➜ App Passwords*. Never use your primary account password. |
-| `BSKY_LANG` | String | `es` | Post language tag (e.g., `es`, `en`, `ca`). Sets the AT-Protocol `langs` metadata and selects the base phrasing pack (`locales/{lang}.json`). |
+| `BSKY_LANG` | String | `en` | Post language tag (e.g., `en`, `es`, `ca`). Sets the AT-Protocol `langs` metadata and selects the base phrasing pack (`locales/{lang}.json`). |
 | `POLL_INTERVAL_MINUTES` | Integer | `90` | Polling frequency in minutes. `90` minutes is optimal to group consecutive episodes watched in a single binge session. |
-| `LINK_DESTINATION` | String | `tmdb` | Target destination for external card embeds. Values: `tmdb` (The Movie Database), `simkl`, or `imdb`. |
+| `LINK_DESTINATION` | String | `tmdb` | Target destination for external card embeds. Values: `tmdb` (The Movie Database), `wetrakr`, `simkl`, or `imdb`. |
 | `TZ` | String | `Europe/Madrid` | System timezone. Essential for accurately calculating time-of-day phrases, weekdays, and reporting windows. |
 | `PUID` / `PGID` | Integer | `1026` / `100` | User and group IDs for file permissions on NAS storage volumes (Synology, Unraid, TrueNAS). |
 
@@ -62,11 +62,11 @@ services:
       - PGID=100
       - PYTHONUNBUFFERED=1
       - DRY_RUN=${DRY_RUN:-false}
-      - TRACKER_PROVIDER=${TRACKER_PROVIDER:-simkl}
-      - SIMKL_CLIENT_ID=${SIMKL_CLIENT_ID}
-      - SIMKL_USER_TOKEN=${SIMKL_USER_TOKEN}
+      - TRACKER_PROVIDER=${TRACKER_PROVIDER:-wetrakr}
       - WETRAKR_CLIENT_ID=${WETRAKR_CLIENT_ID}
       - WETRAKR_CLIENT_SECRET=${WETRAKR_CLIENT_SECRET}
+      - SIMKL_CLIENT_ID=${SIMKL_CLIENT_ID}
+      - SIMKL_USER_TOKEN=${SIMKL_USER_TOKEN}
       - BSKY_HANDLE=${BSKY_HANDLE}
       - BSKY_APP_PASSWORD=${BSKY_APP_PASSWORD}
       - BSKY_LANG=${BSKY_LANG:-en}
