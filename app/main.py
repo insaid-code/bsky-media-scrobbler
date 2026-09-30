@@ -129,7 +129,7 @@ def seed_history_if_needed(client, storage: Storage, provider: str = "simkl"):
     log.info("✅ Siembra completada: %d registros históricos guardados como anunciados.", len(keys))
 
 
-def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl"):
+def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl", tracker_client=None):
     announced = storage.get_announced()
     new_keys = []
 
@@ -173,6 +173,16 @@ def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provid
         poster_url = get_poster_url(movie.get("poster"))
         overview = movie.get("overview")
 
+        if not poster_url and provider == "wetrakr" and tracker_client and hasattr(tracker_client, "get_movie_details"):
+            try:
+                m_details = tracker_client.get_movie_details(ids.get("wetrakr") or item_id)
+                if m_details.get("poster_path"):
+                    poster_url = get_poster_url(m_details.get("poster_path"))
+                if not overview:
+                    overview = m_details.get("overview")
+            except Exception as d_err:
+                log.debug("No se pudieron cargar detalles de la peli para carátula: %s", d_err)
+
         if bsky.post_watch(
             text=post_text,
             link_url=link_url,
@@ -190,7 +200,7 @@ def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provid
         log.info("Publicadas %d película(s) en Bluesky.", len(new_keys))
 
 
-def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl"):
+def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl", tracker_client=None):
     announced = storage.get_announced()
     new_keys = []
 
@@ -290,6 +300,16 @@ def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyP
                 link_url = get_link_url(media_type, show, LINK_DESTINATION)
                 poster_url = get_poster_url(show.get("poster"))
                 overview = show.get("overview")
+
+                if not poster_url and provider == "wetrakr" and tracker_client and hasattr(tracker_client, "get_show_details"):
+                    try:
+                        s_details = tracker_client.get_show_details(ids.get("wetrakr") or item_id)
+                        if s_details.get("poster_path"):
+                            poster_url = get_poster_url(s_details.get("poster_path"))
+                        if not overview:
+                            overview = s_details.get("overview")
+                    except Exception as d_err:
+                        log.debug("No se pudieron cargar detalles de la serie para carátula: %s", d_err)
 
                 if bsky.post_watch(
                     text=post_text,
@@ -515,9 +535,9 @@ def main():
                     items = tracker_client.get_all_items(media_type, date_from=last_local_time)
 
                     if media_type == "movies":
-                        process_movies(items, storage, bsky, provider=TRACKER_PROVIDER)
+                        process_movies(items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client)
                     else:
-                        process_shows(media_type, items, storage, bsky, provider=TRACKER_PROVIDER)
+                        process_shows(media_type, items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client)
 
                     storage.set_last_checked(media_type, last_server_time)
                 else:

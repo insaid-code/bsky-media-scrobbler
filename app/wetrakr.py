@@ -166,6 +166,45 @@ class WeTrakrClient:
         return {}
 
     # -------------------------------------------------------------------------
+    # Consulta de detalles con caché para pósters y metadatos
+    # -------------------------------------------------------------------------
+    def get_movie_details(self, movie_id: int | str) -> dict:
+        if not movie_id:
+            return {}
+        if not hasattr(self, "_movie_cache"):
+            self._movie_cache = {}
+        if movie_id in self._movie_cache:
+            return self._movie_cache[movie_id]
+        url = f"{API_BASE}/movies/{movie_id}"
+        try:
+            resp = self.session.get(url, headers=self._headers(), timeout=15)
+            if resp.status_code == 200:
+                data = resp.json()
+                self._movie_cache[movie_id] = data
+                return data
+        except Exception as e:
+            log.debug("No se pudieron obtener detalles de la película %s de WeTrakr: %s", movie_id, e)
+        return {}
+
+    def get_show_details(self, show_id: int | str) -> dict:
+        if not show_id:
+            return {}
+        if not hasattr(self, "_show_cache"):
+            self._show_cache = {}
+        if show_id in self._show_cache:
+            return self._show_cache[show_id]
+        url = f"{API_BASE}/shows/{show_id}"
+        try:
+            resp = self.session.get(url, headers=self._headers(), timeout=15)
+            if resp.status_code == 200:
+                data = resp.json()
+                self._show_cache[show_id] = data
+                return data
+        except Exception as e:
+            log.debug("No se pudieron obtener detalles de la serie %s de WeTrakr: %s", show_id, e)
+        return {}
+
+    # -------------------------------------------------------------------------
     # Historial de visionados normalizado
     # -------------------------------------------------------------------------
     def get_all_items(self, media_type: str, date_from: str | None = None) -> list:
@@ -200,17 +239,20 @@ class WeTrakrClient:
                 for p in plays:
                     mov = p.get("movie") or {}
                     ids = mov.get("ids") or {}
+                    m_id = mov.get("id")
+
                     normalized.append({
                         "movie": {
                             "title": mov.get("title") or "Película",
                             "year": mov.get("year"),
                             "ids": {
-                                "simkl": ids.get("tmdb") or mov.get("id"),
+                                "simkl": ids.get("tmdb") or m_id,
                                 "tmdb": ids.get("tmdb"),
                                 "imdb": ids.get("imdb"),
-                                "wetrakr": mov.get("id"),
+                                "wetrakr": m_id,
                             },
                             "poster": mov.get("poster_path"),
+                            "overview": mov.get("overview"),
                             "runtime": mov.get("runtime"),
                         },
                         "watched_at": p.get("watched_at"),
@@ -227,6 +269,10 @@ class WeTrakrClient:
                         continue
                     if s_id not in shows_map:
                         s_ids = show.get("ids") or {}
+                        show_poster = show.get("poster_path") or ep.get("season_poster_path")
+                        show_overview = show.get("overview") or ep.get("overview")
+                        show_runtime = show.get("runtime")
+
                         shows_map[s_id] = {
                             "show": {
                                 "title": show.get("title") or "Serie",
@@ -236,8 +282,9 @@ class WeTrakrClient:
                                     "imdb": s_ids.get("imdb"),
                                     "wetrakr": s_id,
                                 },
-                                "poster": show.get("poster_path"),
-                                "runtime": show.get("runtime"),
+                                "poster": show_poster,
+                                "overview": show_overview,
+                                "runtime": show_runtime,
                             },
                             "seasons_dict": {},
                         }
