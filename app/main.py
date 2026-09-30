@@ -510,7 +510,13 @@ def main():
     )
     bsky.login()
 
-    stats_mgr = StatsManager(simkl=tracker_client, storage=storage, bsky=bsky, provider=TRACKER_PROVIDER)
+    stats_mgr = StatsManager(
+        simkl=tracker_client,
+        storage=storage,
+        bsky=bsky,
+        provider=TRACKER_PROVIDER,
+        lang=BSKY_LANG,
+    )
 
     # Siembra inicial si es la primera vez
     seed_history_if_needed(tracker_client, storage, provider=TRACKER_PROVIDER)

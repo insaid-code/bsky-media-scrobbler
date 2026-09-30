@@ -44,10 +44,10 @@ Bot autònom en Python per a Docker que monitoritza la teva activitat a les teve
 
 Per consultar guies detallades pas a pas sobre cada mòdul del projecte:
 
-* ⚙️ **[Guia de Configuració i Variables d'Entorn (Espanyol)](docs/es/CONFIGURACION.md) / [English](docs/en/CONFIGURATION.md):** Paràmetres del `.env`, estructura de volums, permisos i plantilla per a Dockge/Compose.
-* ✍️ **[Motor de Frases Personalitzades (Espanyol)](docs/es/FRASES_PERSONALIZADAS.md) / [English](docs/en/CUSTOM_PHRASES.md):** Com crear el teu propi `custom_phrases.json`, variables disponibles (`{show_title}`, `{season_num}`...), modes suma vs reemplaçament i recàrrega en calent.
-* 📊 **[Estadístiques, Informes i Collages Visuals (Espanyol)](docs/es/ESTADISTICAS.md) / [English](docs/en/STATISTICS.md):** Calendari de balanços, especificacions d'imatge de Pillow i configuració a OliveTin.
-* 🔌 **[Proveïdors de Seguiment: WeTrakr i SIMKL (Espanyol)](docs/es/PROVEEDORES.md) / [English](docs/en/PROVIDERS.md):** Obtenció d'API keys, flux d'autorització per codi PIN (`Device Auth`) i renovació automàtica de tokens.
+* ⚙️ **[Guia de Configuració i Variables d'Entorn (`docs/ca/CONFIGURACIO.md`)](docs/ca/CONFIGURACIO.md):** Paràmetres del `.env`, estructura de volums, permisos i plantilla per a Dockge/Compose.
+* ✍️ **[Motor de Frases Personalitzades (`docs/ca/FRASES_PERSONALITZADES.md`)](docs/ca/FRASES_PERSONALITZADES.md):** Com crear el teu propi `custom_phrases.json`, variables disponibles (`{show_title}`, `{season_num}`...), modes suma vs reemplaçament i recàrrega en calent.
+* 📊 **[Estadístiques, Informes i Collages Visuals (`docs/ca/ESTADISTIQUES.md`)](docs/ca/ESTADISTIQUES.md):** Calendari de balanços, especificacions d'imatge de Pillow i configuració a OliveTin.
+* 🔌 **[Proveïdors de Seguiment: WeTrakr i SIMKL (`docs/ca/PROVEIDORS.md`)](docs/ca/PROVEIDORS.md):** Obtenció d'API keys, flux d'autorització per codi PIN (`Device Auth`) i renovació automàtica de tokens.
 
 ---
 

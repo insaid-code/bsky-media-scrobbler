@@ -11,31 +11,84 @@ from storage import Storage
 
 log = logging.getLogger("simkl-bluesky")
 
-MONTH_NAMES_ES = [
-    "",
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-]
+MONTH_NAMES = {
+    "es": [
+        "",
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+    ],
+    "en": [
+        "",
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ],
+    "ca": [
+        "",
+        "Gener",
+        "Febrer",
+        "Març",
+        "Abril",
+        "Maig",
+        "Juny",
+        "Juliol",
+        "Agost",
+        "Setembre",
+        "Octubre",
+        "Novembre",
+        "Desembre",
+    ],
+}
 
-WEEKDAY_NAMES_ES = [
-    "Lunes",
-    "Martes",
-    "Miércoles",
-    "Jueves",
-    "Viernes",
-    "Sábado",
-    "Domingo",
-]
+WEEKDAY_NAMES = {
+    "es": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo",
+    ],
+    "en": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ],
+    "ca": [
+        "Dilluns",
+        "Dimarts",
+        "Dimecres",
+        "Dijous",
+        "Divendres",
+        "Dissabte",
+        "Diumenge",
+    ],
+}
+
 
 class StatsManager:
     def __init__(
@@ -45,12 +98,14 @@ class StatsManager:
         bsky: BlueskyPublisher,
         tz_name: str = "Europe/Madrid",
         provider: str = "simkl",
+        lang: str = "es",
     ):
         self.simkl = simkl
         self.storage = storage
         self.bsky = bsky
         self.tz_name = tz_name
         self.provider = provider
+        self.lang = lang.lower() if lang else "es"
         self.tracker_tag = "#WeTrakr" if provider == "wetrakr" else "#Simkl"
         self.tracker_name = "WeTrakr" if provider == "wetrakr" else "SIMKL"
 
@@ -91,14 +146,31 @@ class StatsManager:
 
             if is_new_milestone and current_streak >= 7:
                 log.info("🔥 ¡Nuevo hito de racha alcanzado!: %d días", current_streak)
-                q = get_engagement_question("streak")
-                text = (
-                    f"🔥 ¡NUEVA RACHA DESBLOQUEADA! 🔥\n\n"
-                    f"Acabo de alcanzar los {current_streak} días consecutivos consumiendo ficción.\n"
-                    f"La constancia ante todo 📺🍿\n\n"
-                    f"{q}\n"
-                    f"#RachaSeriéfilo #Series #Cine {self.tracker_tag} #TMDB"
-                )
+                q = get_engagement_question("streak", lang=self.lang)
+                if self.lang == "en":
+                    text = (
+                        f"🔥 NEW STREAK UNLOCKED! 🔥\n\n"
+                        f"Just reached {current_streak} consecutive days watching movies and series.\n"
+                        f"Consistency above all 📺🍿\n\n"
+                        f"{q}\n"
+                        f"#MediaStreak #TVShows #Cinema {self.tracker_tag} #TMDB"
+                    )
+                elif self.lang == "ca":
+                    text = (
+                        f"🔥 NOVA RATXA DESBLOQUEJADA! 🔥\n\n"
+                        f"Acabo d'arribar als {current_streak} dies consecutius consumint ficció.\n"
+                        f"La constància abans de tot 📺🍿\n\n"
+                        f"{q}\n"
+                        f"#RatxaSerèfila #Series #Cinema {self.tracker_tag} #TMDB"
+                    )
+                else:
+                    text = (
+                        f"🔥 ¡NUEVA RACHA DESBLOQUEADA! 🔥\n\n"
+                        f"Acabo de alcanzar los {current_streak} días consecutivos consumiendo ficción.\n"
+                        f"La constancia ante todo 📺🍿\n\n"
+                        f"{q}\n"
+                        f"#RachaSeriéfilo #Series #Cine {self.tracker_tag} #TMDB"
+                    )
                 self.bsky.post_watch(text=text)
 
         except Exception as e:
@@ -137,13 +209,30 @@ class StatsManager:
                 m_key = f"episodes:{m}"
                 if total_eps >= m and m_key not in celebrated:
                     log.info("🎉 ¡Nuevo hito de episodios alcanzado!: %d episodios", m)
-                    text = (
-                        f"🎯 ¡NUEVO HITO DESBLOQUEADO! 🎯\n\n"
-                        f"Acabo de alcanzar los {m:,} episodios vistos en mi historial.\n\n"
-                        f"📦 {tv_completed_shows} series al 100% | 🎬 {movies_completed} pelis\n"
-                        f"⏳ Más de {total_hours:,} horas de ficción en pantalla 🍿✨\n\n"
-                        f"#HitoSeriéfilo #Series {self.tracker_tag} #TMDB"
-                    )
+                    if self.lang == "en":
+                        text = (
+                            f"🎯 NEW MILESTONE UNLOCKED! 🎯\n\n"
+                            f"Just reached {m:,} watched episodes in my history.\n\n"
+                            f"📦 {tv_completed_shows} completed shows | 🎬 {movies_completed} movies\n"
+                            f"⏳ Over {total_hours:,} hours of fiction on screen 🍿✨\n\n"
+                            f"#MediaMilestone #TVShows {self.tracker_tag} #TMDB"
+                        )
+                    elif self.lang == "ca":
+                        text = (
+                            f"🎯 NOU HITO DESBLOQUEJAT! 🎯\n\n"
+                            f"Acabo d'arribar als {m:,} episodis vistos al meu historial.\n\n"
+                            f"📦 {tv_completed_shows} sèries al 100% | 🎬 {movies_completed} pel·lis\n"
+                            f"⏳ Més de {total_hours:,} hores de ficció en pantalla 🍿✨\n\n"
+                            f"#HitoSerèfil #Series {self.tracker_tag} #TMDB"
+                        )
+                    else:
+                        text = (
+                            f"🎯 ¡NUEVO HITO DESBLOQUEADO! 🎯\n\n"
+                            f"Acabo de alcanzar los {m:,} episodios vistos en mi historial.\n\n"
+                            f"📦 {tv_completed_shows} series al 100% | 🎬 {movies_completed} pelis\n"
+                            f"⏳ Más de {total_hours:,} horas de ficción en pantalla 🍿✨\n\n"
+                            f"#HitoSeriéfilo #Series {self.tracker_tag} #TMDB"
+                        )
                     if self.bsky.post_watch(text=text):
                         self.storage.add_celebrated_milestone(m_key)
                     return
@@ -153,14 +242,33 @@ class StatsManager:
                 m_key = f"shows_completed:{m}"
                 if tv_completed_shows >= m and m_key not in celebrated:
                     log.info("🎉 ¡Nuevo hito de series completadas!: %d series", m)
-                    text = (
-                        f"🏆 ¡HITO DE SERIES COMPLETADAS! 🏆\n\n"
-                        f"Ya son {m} series terminadas de principio a fin al 100%.\n\n"
-                        f"📺 {total_eps:,} episodios vistos en total\n"
-                        f"🎬 {movies_completed} películas registradas\n\n"
-                        f"Cerrar una serie entera siempre deja un vacío... ¿cuál empiezo ahora? 🍿\n"
-                        f"#HitoSeriéfilo #Series {self.tracker_tag} #TMDB"
-                    )
+                    if self.lang == "en":
+                        text = (
+                            f"🏆 COMPLETED SHOWS MILESTONE! 🏆\n\n"
+                            f"That makes {m} shows completed from start to finish 100%.\n\n"
+                            f"📺 {total_eps:,} total episodes watched\n"
+                            f"🎬 {movies_completed} movies logged\n\n"
+                            f"Finishing a whole series always leaves a void... what should I start next? 🍿\n"
+                            f"#MediaMilestone #TVShows {self.tracker_tag} #TMDB"
+                        )
+                    elif self.lang == "ca":
+                        text = (
+                            f"🏆 HITO DE SÈRIES COMPLETADES! 🏆\n\n"
+                            f"Ja són {m} sèries acabades de principi a fi al 100%.\n\n"
+                            f"📺 {total_eps:,} episodis vistos en total\n"
+                            f"🎬 {movies_completed} pel·lícules registrades\n\n"
+                            f"Acabar una sèrie sencera sempre deixa un buit... quina començo ara? 🍿\n"
+                            f"#HitoSerèfil #Series {self.tracker_tag} #TMDB"
+                        )
+                    else:
+                        text = (
+                            f"🏆 ¡HITO DE SERIES COMPLETADAS! 🏆\n\n"
+                            f"Ya son {m} series terminadas de principio a fin al 100%.\n\n"
+                            f"📺 {total_eps:,} episodios vistos en total\n"
+                            f"🎬 {movies_completed} películas registradas\n\n"
+                            f"Cerrar una serie entera siempre deja un vacío... ¿cuál empiezo ahora? 🍿\n"
+                            f"#HitoSeriéfilo #Series {self.tracker_tag} #TMDB"
+                        )
                     if self.bsky.post_watch(text=text):
                         self.storage.add_celebrated_milestone(m_key)
                     return
@@ -170,13 +278,30 @@ class StatsManager:
                 m_key = f"movies_completed:{m}"
                 if movies_completed >= m and m_key not in celebrated:
                     log.info("🎉 ¡Nuevo hito de películas alcanzado!: %d películas", m)
-                    text = (
-                        f"🎬 ¡HITO CINÉFILO DESBLOQUEADO! 🎬\n\n"
-                        f"Acabo de alcanzar las {m} películas vistas y registradas.\n\n"
-                        f"📺 Acompañadas de {total_eps:,} capítulos de series\n"
-                        f"⭐ Seguimos descubriendo grandes historias en la pantalla.\n\n"
-                        f"#Cine #Películas #HitoSeriéfilo {self.tracker_tag} #TMDB"
-                    )
+                    if self.lang == "en":
+                        text = (
+                            f"🎬 MOVIE MILESTONE UNLOCKED! 🎬\n\n"
+                            f"Just reached {m} movies logged and watched.\n\n"
+                            f"📺 Along with {total_eps:,} TV episodes\n"
+                            f"⭐ Still discovering great stories on screen.\n\n"
+                            f"#Cinema #Movies #MediaMilestone {self.tracker_tag} #TMDB"
+                        )
+                    elif self.lang == "ca":
+                        text = (
+                            f"🎬 HITO CINÈFIL DESBLOQUEJAT! 🎬\n\n"
+                            f"Acabo d'arribar a les {m} pel·lícules vistes i registrades.\n\n"
+                            f"📺 Acompanyades de {total_eps:,} capítols de sèries\n"
+                            f"⭐ Continuem descobrint grans històries a la pantalla.\n\n"
+                            f"#Cinema #Pel·lícules #HitoSerèfil {self.tracker_tag} #TMDB"
+                        )
+                    else:
+                        text = (
+                            f"🎬 ¡HITO CINÉFILO DESBLOQUEADO! 🎬\n\n"
+                            f"Acabo de alcanzar las {m} películas vistas y registradas.\n\n"
+                            f"📺 Acompañadas de {total_eps:,} capítulos de series\n"
+                            f"⭐ Seguimos descubriendo grandes historias en la pantalla.\n\n"
+                            f"#Cine #Películas #HitoSeriéfilo {self.tracker_tag} #TMDB"
+                        )
                     if self.bsky.post_watch(text=text):
                         self.storage.add_celebrated_milestone(m_key)
                     return
@@ -288,19 +413,50 @@ class StatsManager:
             top_show_str = ""
             if ep_counts_by_show:
                 top_show, top_count = ep_counts_by_show.most_common(1)[0]
-                top_show_str = f"\n🏆 Serie de la semana: {top_show} ({top_count} caps)"
+                if self.lang == "en":
+                    top_show_str = f"\n🏆 Show of the week: {top_show} ({top_count} eps)"
+                elif self.lang == "ca":
+                    top_show_str = f"\n🏆 Sèrie de la setmana: {top_show} ({top_count} caps)"
+                else:
+                    top_show_str = f"\n🏆 Serie de la semana: {top_show} ({top_count} caps)"
 
-            question = get_engagement_question("weekly")
-            movies_line = f"🎬 {movies_count} película{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
-            text = (
-                f"📊 Balance Semanal Seriéfilo (Semana {week_num})\n\n"
-                f"📺 {total_eps} episodios vistos\n"
-                f"{movies_line}"
-                f"⏱️ {time_str} de pantalla dedicadas a la ficción"
-                f"{top_show_str}\n\n"
-                f"{question}\n"
-                f"#Estadísticas #Series #Cine {self.tracker_tag}"
-            )
+            question = get_engagement_question("weekly", lang=self.lang)
+            if self.lang == "en":
+                movies_line = f"🎬 {movies_count} movie{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
+                text = (
+                    f"📊 Weekly Media Balance (Week {week_num})\n\n"
+                    f"📺 {total_eps} episodes watched\n"
+                    f"{movies_line}"
+                    f"⏱️ {time_str} of screen time dedicated to fiction"
+                    f"{top_show_str}\n\n"
+                    f"{question}\n"
+                    f"#Statistics #TVShows #Cinema {self.tracker_tag}"
+                )
+                alt_text = f"Weekly Collage {week_num}"
+            elif self.lang == "ca":
+                movies_line = f"🎬 {movies_count} pel·lícula{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
+                text = (
+                    f"📊 Balanç Setmanal Serèfil (Setmana {week_num})\n\n"
+                    f"📺 {total_eps} episodis vistos\n"
+                    f"{movies_line}"
+                    f"⏱️ {time_str} de pantalla dedicats a la ficció"
+                    f"{top_show_str}\n\n"
+                    f"{question}\n"
+                    f"#Estadístiques #Series #Cinema {self.tracker_tag}"
+                )
+                alt_text = f"Collage Setmanal {week_num}"
+            else:
+                movies_line = f"🎬 {movies_count} película{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
+                text = (
+                    f"📊 Balance Semanal Seriéfilo (Semana {week_num})\n\n"
+                    f"📺 {total_eps} episodios vistos\n"
+                    f"{movies_line}"
+                    f"⏱️ {time_str} de pantalla dedicadas a la ficción"
+                    f"{top_show_str}\n\n"
+                    f"{question}\n"
+                    f"#Estadísticas #Series #Cine {self.tracker_tag}"
+                )
+                alt_text = f"Collage Semanal {week_num}"
 
             collage_bytes = None
             if poster_urls:
@@ -309,7 +465,7 @@ class StatsManager:
                 except Exception as c_err:
                     log.warning("No se pudo generar collage semanal: %s", c_err)
 
-            if self.bsky.post_watch(text=text, image_bytes=collage_bytes, image_alt=f"Collage Semanal {week_num}"):
+            if self.bsky.post_watch(text=text, image_bytes=collage_bytes, image_alt=alt_text):
                 log.info("Publicado informe semanal con éxito (%s).", week_marker)
                 self.storage.set_last_stats_posted("weekly", week_marker)
 
@@ -414,14 +570,26 @@ class StatsManager:
             top_show_str = ""
             if ep_counts_by_show:
                 top_show, top_count = ep_counts_by_show.most_common(1)[0]
-                top_show_str = f"\n🏆 Serie del mes: {top_show} ({top_count} caps)"
+                if self.lang == "en":
+                    top_show_str = f"\n🏆 Show of the month: {top_show} ({top_count} eps)"
+                elif self.lang == "ca":
+                    top_show_str = f"\n🏆 Sèrie del mes: {top_show} ({top_count} caps)"
+                else:
+                    top_show_str = f"\n🏆 Serie del mes: {top_show} ({top_count} caps)"
 
             completed_str = ""
             if completed_shows:
                 top_completed = completed_shows[:3]
                 more = len(completed_shows) - len(top_completed)
-                list_str = ", ".join(top_completed) + (f" (+{more} más)" if more > 0 else "")
-                completed_str = f"\n🏁 Series completadas: {list_str}"
+                if self.lang == "en":
+                    list_str = ", ".join(top_completed) + (f" (+{more} more)" if more > 0 else "")
+                    completed_str = f"\n🏁 Completed shows: {list_str}"
+                elif self.lang == "ca":
+                    list_str = ", ".join(top_completed) + (f" (+{more} més)" if more > 0 else "")
+                    completed_str = f"\n🏁 Sèries completades: {list_str}"
+                else:
+                    list_str = ", ".join(top_completed) + (f" (+{more} más)" if more > 0 else "")
+                    completed_str = f"\n🏁 Series completadas: {list_str}"
 
             # Selección inteligente de carátulas para el collage (2x2 o 3x3 según target_count)
             if len(movie_posters) + len(sorted_show_posters) <= target_count:
@@ -435,20 +603,48 @@ class StatsManager:
                     selected_movies += movie_posters[len(selected_movies):len(selected_movies) + (remaining_slots - len(selected_shows))]
                 poster_urls = selected_movies + selected_shows
 
-            month_name = MONTH_NAMES_ES[prev_month]
-            question = get_engagement_question("monthly")
-            movies_line = f"🎬 {movies_count} película{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
+            month_name = MONTH_NAMES.get(self.lang, MONTH_NAMES["es"])[prev_month]
+            question = get_engagement_question("monthly", lang=self.lang)
 
-            text = (
-                f"🗓️ Balance Mensual Seriéfilo ({month_name} {prev_year})\n\n"
-                f"📺 {total_eps} episodios devorados\n"
-                f"{movies_line}"
-                f"⏱️ {time_str} de pantalla dedicadas a la ficción"
-                f"{top_show_str}"
-                f"{completed_str}\n\n"
-                f"{question}\n"
-                f"#ResumenMensual #Series #Cine {self.tracker_tag}"
-            )
+            if self.lang == "en":
+                movies_line = f"🎬 {movies_count} movie{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
+                text = (
+                    f"🗓️ Monthly Media Balance ({month_name} {prev_year})\n\n"
+                    f"📺 {total_eps} episodes binge-watched\n"
+                    f"{movies_line}"
+                    f"⏱️ {time_str} of screen time dedicated to fiction"
+                    f"{top_show_str}"
+                    f"{completed_str}\n\n"
+                    f"{question}\n"
+                    f"#MonthlyRecap #TVShows #Cinema {self.tracker_tag}"
+                )
+                alt_text = f"Monthly Collage {month_name} {prev_year}"
+            elif self.lang == "ca":
+                movies_line = f"🎬 {movies_count} pel·lícula{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
+                text = (
+                    f"🗓️ Balanç Mensual Serèfil ({month_name} {prev_year})\n\n"
+                    f"📺 {total_eps} episodis devorats\n"
+                    f"{movies_line}"
+                    f"⏱️ {time_str} de pantalla dedicats a la ficció"
+                    f"{top_show_str}"
+                    f"{completed_str}\n\n"
+                    f"{question}\n"
+                    f"#ResumMensual #Series #Cinema {self.tracker_tag}"
+                )
+                alt_text = f"Collage Mensual {month_name} {prev_year}"
+            else:
+                movies_line = f"🎬 {movies_count} película{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
+                text = (
+                    f"🗓️ Balance Mensual Seriéfilo ({month_name} {prev_year})\n\n"
+                    f"📺 {total_eps} episodios devorados\n"
+                    f"{movies_line}"
+                    f"⏱️ {time_str} de pantalla dedicadas a la ficción"
+                    f"{top_show_str}"
+                    f"{completed_str}\n\n"
+                    f"{question}\n"
+                    f"#ResumenMensual #Series #Cine {self.tracker_tag}"
+                )
+                alt_text = f"Collage Mensual {month_name} {prev_year}"
 
             collage_bytes = None
             if poster_urls:
@@ -457,7 +653,7 @@ class StatsManager:
                 except Exception as c_err:
                     log.warning("No se pudo generar collage mensual: %s", c_err)
 
-            if self.bsky.post_watch(text=text, image_bytes=collage_bytes, image_alt=f"Collage Mensual {month_name} {prev_year}"):
+            if self.bsky.post_watch(text=text, image_bytes=collage_bytes, image_alt=alt_text):
                 log.info("Publicado informe mensual con éxito (%s).", month_marker)
                 self.storage.set_last_stats_posted("monthly", month_marker)
 
@@ -510,15 +706,32 @@ class StatsManager:
 
                     if weekdays:
                         top_wd, _ = weekdays.most_common(1)[0]
-                        top_day_name = WEEKDAY_NAMES_ES[top_wd]
+                        top_day_name = WEEKDAY_NAMES.get(self.lang, WEEKDAY_NAMES["es"])[top_wd]
                         top_hour, _ = hours.most_common(1)[0] if hours else (22, 0)
-                        text = (
-                            f"💡 Curiosidad de Datos: Patrones en {self.tracker_name}\n\n"
-                            f"📅 Día favorito: El {top_day_name} es mi día más activo maratoneando.\n"
-                            f"⏰ Hora punta: Mi actividad suele concentrarse hacia las {top_hour:02d}:00h.\n\n"
-                            f"¿Tenéis también un día sagrado para ver series? 📺🍿\n"
-                            f"#Estadísticas #Series {self.tracker_tag}"
-                        )
+                        if self.lang == "en":
+                            text = (
+                                f"💡 Data Insight: Watching Habits on {self.tracker_name}\n\n"
+                                f"📅 Favorite day: {top_day_name} is my most active day binge-watching.\n"
+                                f"⏰ Peak time: My activity peaks around {top_hour:02d}:00.\n\n"
+                                f"Do you also have a sacred day for watching shows? 📺🍿\n"
+                                f"#Statistics #TVShows {self.tracker_tag}"
+                            )
+                        elif self.lang == "ca":
+                            text = (
+                                f"💡 Curiositat de Dades: Patrons a {self.tracker_name}\n\n"
+                                f"📅 Dia preferit: El {top_day_name} és el meu dia més actiu fent maratons.\n"
+                                f"⏰ Hora punta: La meva activitat sol concentrar-se cap a les {top_hour:02d}:00h.\n\n"
+                                f"També teniu un dia sagrat per veure sèries? 📺🍿\n"
+                                f"#Estadístiques #Series {self.tracker_tag}"
+                            )
+                        else:
+                            text = (
+                                f"💡 Curiosidad de Datos: Patrones en {self.tracker_name}\n\n"
+                                f"📅 Día favorito: El {top_day_name} es mi día más activo maratoneando.\n"
+                                f"⏰ Hora punta: Mi actividad suele concentrarse hacia las {top_hour:02d}:00h.\n\n"
+                                f"¿Tenéis también un día sagrado para ver series? 📺🍿\n"
+                                f"#Estadísticas #Series {self.tracker_tag}"
+                            )
                 except Exception as day_err:
                     log.warning("No se pudo calcular el patrón de días: %s", day_err)
 
@@ -532,13 +745,30 @@ class StatsManager:
                         title = (longest.get("show") or {}).get("title") or "Serie"
                         ep_count = longest.get("watched_episodes_count", 0)
 
-                        text = (
-                            f"💡 Curiosidad Seriéfila: Fidelidad\n\n"
-                            f"De las {tv_completed} series terminadas al 100%:\n"
-                            f"🏆 La más extensa es {title} ({ep_count} capítulos vistos).\n\n"
-                            f"¿Cuál es la serie más larga que habéis terminado? 🍿🎬\n"
-                            f"#Series #Hitos {self.tracker_tag}"
-                        )
+                        if self.lang == "en":
+                            text = (
+                                f"💡 Media Insight: Dedication\n\n"
+                                f"Out of {tv_completed} shows completed 100%:\n"
+                                f"🏆 The longest is {title} ({ep_count} episodes watched).\n\n"
+                                f"What is the longest series you have ever finished? 🍿🎬\n"
+                                f"#TVShows #Milestones {self.tracker_tag}"
+                            )
+                        elif self.lang == "ca":
+                            text = (
+                                f"💡 Curiositat Serèfila: Fidelitat\n\n"
+                                f"De les {tv_completed} sèries acabades al 100%:\n"
+                                f"🏆 La més extensa és {title} ({ep_count} capítols vistos).\n\n"
+                                f"Quina és la sèrie més llarga que heu acabat? 🍿🎬\n"
+                                f"#Series #Hitos {self.tracker_tag}"
+                            )
+                        else:
+                            text = (
+                                f"💡 Curiosidad Seriéfila: Fidelidad\n\n"
+                                f"De las {tv_completed} series terminadas al 100%:\n"
+                                f"🏆 La más extensa es {title} ({ep_count} capítulos vistos).\n\n"
+                                f"¿Cuál es la serie más larga que habéis terminado? 🍿🎬\n"
+                                f"#Series #Hitos {self.tracker_tag}"
+                            )
                 except Exception as long_err:
                     log.warning("No se pudo calcular la serie más larga: %s", long_err)
 
@@ -551,13 +781,30 @@ class StatsManager:
                 )
                 total_days = total_mins // (60 * 24)
 
-                text = (
-                    f"💡 Curiosidad Seriéfila: Finalización\n\n"
-                    f"📊 De {total_started} series empezadas:\n"
-                    f"✅ {tv_completed} están terminadas al 100% ({completion_rate}% de fidelidad).\n\n"
-                    f"⏳ Los {total_mins:,} mins equivalen a {total_days} días continuos de ficción.\n\n"
-                    f"#Estadísticas #Series {self.tracker_tag}"
-                )
+                if self.lang == "en":
+                    text = (
+                        f"💡 Media Insight: Completion Rate\n\n"
+                        f"📊 Out of {total_started} shows started:\n"
+                        f"✅ {tv_completed} are 100% completed ({completion_rate}% completion rate).\n\n"
+                        f"⏳ {total_mins:,} mins equal {total_days} continuous days of fiction.\n\n"
+                        f"#Statistics #TVShows {self.tracker_tag}"
+                    )
+                elif self.lang == "ca":
+                    text = (
+                        f"💡 Curiositat Serèfila: Finalització\n\n"
+                        f"📊 De {total_started} sèries començades:\n"
+                        f"✅ {tv_completed} estan acabades al 100% ({completion_rate}% de fidelitat).\n\n"
+                        f"⏳ Els {total_mins:,} mins equivalen a {total_days} dies continus de ficció.\n\n"
+                        f"#Estadístiques #Series {self.tracker_tag}"
+                    )
+                else:
+                    text = (
+                        f"💡 Curiosidad Seriéfila: Finalización\n\n"
+                        f"📊 De {total_started} series empezadas:\n"
+                        f"✅ {tv_completed} están terminadas al 100% ({completion_rate}% de fidelidad).\n\n"
+                        f"⏳ Los {total_mins:,} mins equivalen a {total_days} días continuos de ficción.\n\n"
+                        f"#Estadísticas #Series {self.tracker_tag}"
+                    )
 
             if text and self.bsky.post_watch(text=text):
                 log.info("Publicado Fun Fact para %s con éxito.", fact_marker)
