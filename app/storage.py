@@ -18,6 +18,8 @@ class Storage:
         self.file_path = file_path
         self._ensure_dir()
         self.data = self._load()
+        # PC-01: Recuperar claves que quedaron en tránsito tras reinicio o fallo inesperado
+        self._recover_in_flight()
 
     def _ensure_dir(self):
         directory = os.path.dirname(self.file_path)
@@ -26,6 +28,20 @@ class Storage:
                 os.makedirs(directory, exist_ok=True)
             except Exception as e:
                 log.warning("No se pudo crear el directorio de datos %s: %s", directory, e)
+
+    def _recover_in_flight(self):
+        """PC-01: Confirma claves en tránsito huérfanas tras reinicios para prevenir posts duplicados."""
+        in_flight = self.data.get("in_flight", [])
+        if in_flight:
+            log.warning(
+                "⚠️ Detectadas %d clave(s) en tránsito ('in_flight') huérfanas tras reinicio. "
+                "Confirmando automáticamente para evitar duplicados en Bluesky: %s",
+                len(in_flight),
+                in_flight,
+            )
+            self.add_announced(in_flight)
+            self.data["in_flight"] = []
+            self.save()
 
     def _load(self) -> dict:
         if os.path.exists(self.file_path):
@@ -42,6 +58,7 @@ class Storage:
                             "movies": EPOCH_ISO,
                         })
                         data.setdefault("announced", [])
+                        data.setdefault("in_flight", [])  # PC-01: Registro transaccional
                         data.setdefault("recent_phrases", [])
                         data.setdefault("last_stats_posted", {})
                         data.setdefault("celebrated_milestones", [])
@@ -102,19 +119,63 @@ class Storage:
         self.save()
 
     def get_announced(self) -> set[str]:
-        return set(self.data.get("announced", []))
+        raw = set(self.data.get("announced", []))
+        # PC-03: Deduplicación cruzada anime <-> shows para SIMKL
+        # Si una clave fue guardada como shows:ID:S:E, expandir también anime:ID:S:E y viceversa
+        expanded = set(raw)
+        for k in raw:
+            if k.startswith("shows:"):
+                expanded.add(k.replace("shows:", "anime:", 1))
+            elif k.startswith("anime:"):
+                expanded.add(k.replace("anime:", "shows:", 1))
+        return expanded
 
     def add_announced(self, keys: list[str]):
         # Operar sobre la lista serializada (con orden de inserción garantizado)
         current_list = self.data.get("announced", [])
         current_set = set(current_list)
-        new_keys = [k for k in keys if k not in current_set]
+        new_keys = []
+        for k in keys:
+            if k not in current_set:
+                new_keys.append(k)
+                current_set.add(k)
+            # PC-03: Registrar automáticamente la variante cruzada para blindaje permanente
+            if k.startswith("shows:"):
+                alt = k.replace("shows:", "anime:", 1)
+                if alt not in current_set:
+                    new_keys.append(alt)
+                    current_set.add(alt)
+            elif k.startswith("anime:"):
+                alt = k.replace("anime:", "shows:", 1)
+                if alt not in current_set:
+                    new_keys.append(alt)
+                    current_set.add(alt)
+
         current_list = current_list + new_keys
         # Limitar historial de anunciados conservando los MÁS RECIENTES (BUG-01 fix)
         if len(current_list) > 15000:
             current_list = current_list[-10000:]
         self.data["announced"] = current_list
         self.save()
+
+    def stage_in_flight(self, keys: list[str]):
+        """PC-01: Fase 1 del commit de dos fases. Persiste claves antes del post en Bluesky."""
+        self.data["in_flight"] = list(keys)
+        self.save()
+
+    def commit_in_flight(self):
+        """PC-01: Fase 2. Confirma el post exitoso y traslada las claves a anunciadas."""
+        in_flight = self.data.get("in_flight", [])
+        if in_flight:
+            self.add_announced(in_flight)
+            self.data["in_flight"] = []
+            self.save()
+
+    def rollback_in_flight(self):
+        """PC-01: Cancela la fase en tránsito si la publicación falló para reintentar luego."""
+        if self.data.get("in_flight"):
+            self.data["in_flight"] = []
+            self.save()
 
     def get_last_checked(self, media_type: str) -> str:
         return self.data.get("last_checked", {}).get(media_type, EPOCH_ISO)

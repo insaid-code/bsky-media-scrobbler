@@ -62,6 +62,16 @@ try:
 except ValueError:
     POLL_INTERVAL_MINUTES = 90
 
+try:
+    MAX_POSTS_PER_RUN = max(int(os.getenv("MAX_POSTS_PER_RUN", "6")), 1)
+except ValueError:
+    MAX_POSTS_PER_RUN = 6
+
+try:
+    POST_DELAY_SECONDS = max(int(os.getenv("POST_DELAY_SECONDS", "5")), 1)
+except ValueError:
+    POST_DELAY_SECONDS = 5
+
 LINK_DESTINATION = os.getenv("LINK_DESTINATION", "tmdb").lower()
 MEDIA_TYPES = ("shows", "movies") if TRACKER_PROVIDER == "wetrakr" else ("shows", "anime", "movies")
 ACTIVITY_KEYS = {"shows": "tv_shows", "anime": "anime", "movies": "movies"}
@@ -129,9 +139,12 @@ def seed_history_if_needed(client, storage: Storage, provider: str = "simkl"):
     log.info("✅ Siembra completada: %d registros históricos guardados como anunciados.", len(keys))
 
 
-def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl", tracker_client=None):
+def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl", tracker_client=None, max_posts: int = 6) -> tuple[int, bool, str | None]:
     announced = storage.get_announced()
     new_keys = []
+    posted_count = 0
+    has_more = False
+    last_processed_ts = None
 
     for item in items or []:
         movie = item.get("movie") or {}
@@ -143,6 +156,12 @@ def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provid
         key = movie_key("movies", item_id)
         if key in announced:
             continue
+
+        # PC-02: Control de ráfaga y rate limiting
+        if posted_count >= max_posts:
+            log.warning("⚠️ Límite de seguridad alcanzado (%d posts para esta tanda de películas). El resto se procesará en el siguiente ciclo.", max_posts)
+            has_more = True
+            break
 
         title = movie.get("title", "Película")
         year = movie.get("year")
@@ -183,6 +202,9 @@ def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provid
             except Exception as d_err:
                 log.debug("No se pudieron cargar detalles de la peli para carátula: %s", d_err)
 
+        # PC-01: Fase 1 (Two-Phase Commit) - Registrar en tránsito antes de llamar a Bluesky
+        storage.stage_in_flight([key])
+
         if bsky.post_watch(
             text=post_text,
             link_url=link_url,
@@ -190,19 +212,31 @@ def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provid
             description=overview,
             poster_url=poster_url,
         ):
+            # PC-01: Fase 2 - Confirmar publicación exitosa en disco
+            storage.commit_in_flight()
             new_keys.append(key)
             announced.add(key)
             storage.add_recent_phrase(header_text)
-            time.sleep(3)  # Pausa de cortesía entre posts
+            posted_count += 1
+            w_at = item.get("last_watched_at") or item.get("watched_at")
+            if w_at:
+                last_processed_ts = w_at
+            time.sleep(POST_DELAY_SECONDS)
+        else:
+            storage.rollback_in_flight()
 
     if new_keys:
-        storage.add_announced(new_keys)
         log.info("Publicadas %d película(s) en Bluesky.", len(new_keys))
 
+    return posted_count, has_more, last_processed_ts
 
-def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl", tracker_client=None):
+
+def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl", tracker_client=None, max_posts: int = 6) -> tuple[int, bool, str | None]:
     announced = storage.get_announced()
     new_keys = []
+    posted_count = 0
+    has_more = False
+    last_processed_ts = None
 
     for item in items or []:
         show = item.get("show") or {}
@@ -231,6 +265,7 @@ def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyP
                     unannounced_eps.append({
                         "episode_number": ep_num,
                         "episode_title": ep.get("title"),
+                        "watched_at": ep.get("watched_at"),
                         "key": k,
                     })
 
@@ -239,6 +274,12 @@ def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyP
 
             # Agrupar episodios consecutivos (maratón)
             for ep_group in group_consecutive_episodes(unannounced_eps):
+                # PC-02: Control de ráfaga y rate limiting
+                if posted_count >= max_posts:
+                    log.warning("⚠️ Límite de seguridad alcanzado (%d posts para esta tanda de %s). El resto se procesará en el siguiente ciclo.", max_posts, media_type)
+                    has_more = True
+                    break
+
                 watched_numbers = [e["episode_number"] for e in ep_group]
                 first_ep = ep_group[0]
                 last_ep = ep_group[-1]
@@ -311,6 +352,10 @@ def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyP
                     except Exception as d_err:
                         log.debug("No se pudieron cargar detalles de la serie para carátula: %s", d_err)
 
+                group_keys = [e["key"] for e in ep_group]
+                # PC-01: Fase 1 (Two-Phase Commit) - Registrar en tránsito antes de llamar a Bluesky
+                storage.stage_in_flight(group_keys)
+
                 if bsky.post_watch(
                     text=post_text,
                     link_url=link_url,
@@ -318,15 +363,29 @@ def process_shows(media_type: str, items: list, storage: Storage, bsky: BlueskyP
                     description=overview,
                     poster_url=poster_url,
                 ):
-                    group_keys = [e["key"] for e in ep_group]
+                    # PC-01: Fase 2 - Confirmar publicación exitosa en disco
+                    storage.commit_in_flight()
                     new_keys.extend(group_keys)
                     announced.update(group_keys)
                     storage.add_recent_phrase(header_text)
-                    time.sleep(3)
+                    posted_count += 1
+                    for ep in ep_group:
+                        w_at = ep.get("watched_at")
+                        if w_at:
+                            last_processed_ts = w_at
+                    time.sleep(POST_DELAY_SECONDS)
+                else:
+                    storage.rollback_in_flight()
+
+            if has_more:
+                break
+        if has_more:
+            break
 
     if new_keys:
-        storage.add_announced(new_keys)
         log.info("Publicados %d episodio(s) de %s en Bluesky.", len(new_keys), media_type)
+
+    return posted_count, has_more, last_processed_ts
 
 
 def check_triggers(stats_mgr: StatsManager) -> bool:
@@ -549,8 +608,15 @@ def main():
             provider_label = "WeTrakr" if TRACKER_PROVIDER == "wetrakr" else "SIMKL"
             log.info("Comprobando nueva actividad en %s...", provider_label)
             activities = tracker_client.get_activities()
+            post_budget = MAX_POSTS_PER_RUN
+            has_more_pending = False
 
             for media_type in MEDIA_TYPES:
+                if post_budget <= 0:
+                    log.warning("Presupuesto de posts para este ciclo alcanzado (%d posts). Los tipos de medios restantes se evaluarán en la siguiente tanda.", MAX_POSTS_PER_RUN)
+                    has_more_pending = True
+                    break
+
                 act_key = ACTIVITY_KEYS.get(media_type, media_type)
                 media_act = activities.get(act_key, {})
                 last_server_time = media_act.get("all")
@@ -562,11 +628,21 @@ def main():
                     items = tracker_client.get_all_items(media_type, date_from=last_local_time)
 
                     if media_type == "movies":
-                        process_movies(items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client)
+                        posted, more, last_ts = process_movies(
+                            items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                        )
                     else:
-                        process_shows(media_type, items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client)
+                        posted, more, last_ts = process_shows(
+                            media_type, items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                        )
 
-                    storage.set_last_checked(media_type, last_server_time)
+                    post_budget -= posted
+                    if more:
+                        has_more_pending = True
+                        if last_ts:
+                            storage.set_last_checked(media_type, last_ts)
+                    else:
+                        storage.set_last_checked(media_type, last_server_time)
                 else:
                     log.debug("Sin nueva actividad en '%s'.", media_type)
 
@@ -579,8 +655,13 @@ def main():
         except Exception as stats_err:
             log.warning("Aviso durante la comprobación de estadísticas: %s", stats_err)
 
-        log.info("Próxima comprobación en %d minutos.", POLL_INTERVAL_MINUTES)
-        sleep_until = time.time() + (POLL_INTERVAL_MINUTES * 60)
+        if has_more_pending:
+            log.info("Hay más elementos pendientes por el límite por tanda (%d). Próxima comprobación rápida en 2 minutos para drenar el backlog...", MAX_POSTS_PER_RUN)
+            sleep_until = time.time() + 120
+        else:
+            log.info("Próxima comprobación en %d minutos.", POLL_INTERVAL_MINUTES)
+            sleep_until = time.time() + (POLL_INTERVAL_MINUTES * 60)
+
         while time.time() < sleep_until:
             if check_triggers(stats_mgr):
                 break
