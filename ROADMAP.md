@@ -99,7 +99,7 @@ En OliveTin (o interfaz web ligera) se crea una acción con dos campos:
 
 ---
 
-## 2. PC-01 — Garantía Transaccional Anti-Doble Post
+## 2. PC-01 🟢 — Garantía Transaccional Anti-Doble Post (Implementado)
 
 ### 2.1. El Problema
 Actualmente el flujo es:
@@ -133,7 +133,7 @@ Modificar el esquema de `state.json` añadiendo la cola transaccional `"pending_
 
 ---
 
-## 3. PC-02 / F-02 — Rate Limiter y Control de Inundación
+## 3. PC-02 / F-02 🟢 — Rate Limiter y Control de Inundación (Implementado)
 
 ### 3.1. El Problema
 Si el NAS estuvo apagado un fin de semana o se cambia de tracker, el bot puede acumular 40 episodios pendientes. Publicarlos en un solo ciclo inunda el feed de Bluesky y activa las alertas de spam del protocolo AT.
@@ -275,9 +275,9 @@ class StatusHandler(BaseHTTPRequestHandler):
 
 ## 8. Correcciones de Robustez Menores
 
-### 8.1. PC-03 — Deduplicación cruzada Anime / Series en SIMKL
-* **Problema:** Un anime puede retornar en `get_all_items("shows")` y en `get_all_items("anime")`. Como la clave incluye el prefijo (`shows:ID:S:E` vs `anime:ID:S:E`), se duplica el post.
-* **Fix:** En SIMKL, la clave de anunciados debe normalizarse a `tv:{simkl_id}:{season}:{episode}` para ambas categorías.
+### 8.1. PC-03 🟢 — Deduplicación cruzada Anime / Series en SIMKL (Implementado)
+* **Problema:** Un anime puede retornar en `get_all_items("shows")` y en `get_all_items("anime")`. Como la clave incluía el prefijo (`shows:ID:S:E` vs `anime:ID:S:E`), se duplicaba el post.
+* **Solución Implementada:** En `Storage.get_announced()` y `Storage.add_announced()`, se expanden y registran automáticamente ambas variantes cruzadas (`shows:` y `anime:`), manteniendo 100% de retrocompatibilidad con el historial previo y blindando contra duplicados.
 
 ### 8.2. PC-04 — Rotación Justa de Fun Facts
 * **Problema:** `now.month % 3` hace que Octubre siempre sea el Tema 1, Noviembre el Tema 2, etc.
@@ -285,8 +285,7 @@ class StatusHandler(BaseHTTPRequestHandler):
 
 ### 8.3. PC-05 — Alerta Pushover de Token Expirado
 * **Problema:** Si el `refresh_token` queda revocado, el bot entra en bucle de error sin avisar.
-* **Fix:** Si `refresh_access_token()` retorna `False` y se agotan los reintentos, llamar a la notificación de emergencia del sistema:
-  `/usr/local/bin/python3 /Users/Hector/.local/bin/notify_pushover.py "🚨 ALERTA: Token de sesión de SIMKL/WeTrakr revocado. Se requiere reautenticación manual."`
+* **Fix:** Si `refresh_access_token()` retorna `False` y se agotan los reintentos, registrar error crítico y llamar al servicio de alertas configurado en el entorno.
 
 ---
 
@@ -294,23 +293,25 @@ class StatusHandler(BaseHTTPRequestHandler):
 
 ```mermaid
 graph TD
-    PC01["PC-01: Two-Phase Anti-Doble Post"] --> F07["F-07: Hilos de Comentarios Diferidos"]
-    PC02["PC-02: Rate Limiter (Protección Backlog)"] --> F07
+    PC01["PC-01: Two-Phase Anti-Doble Post ✅"] --> F07["F-07: Hilos de Comentarios Diferidos"]
+    PC02["PC-02: Rate Limiter (Protección Backlog) ✅"] --> F07
     F07 --> F03["F-03: Valoraciones Tardías"]
     F01["F-01: Balance Anual 3x3"]
     F04["F-04: Fun Fact Dropped"]
     F06["F-06: Endpoint /status"]
 ```
 
-| Tarea | Impacto | Complejidad | Archivos Implicados | Versión |
+| Tarea | Impacto | Complejidad | Archivos Implicados | Estado |
 | :--- | :--- | :--- | :--- | :--- |
-| **F-07: Comentarios Diferidos** | ⭐ Alto (UX nocturna) | Media | `bsky.py`, `main.py`, OliveTin | **v1.1** |
-| **F-01: Resumen Anual** | ⭐ Alto (Social) | Baja-Media | `stats.py`, `collage.py` | **v1.1** |
-| **PC-01 / PC-02: Transacción & Rate Limit** | 🛡️ Estabilidad crítica | Media | `storage.py`, `main.py` | **v1.1** |
-| **PC-03 / 04 / 05: Robustez** | 🛡️ Mantenimiento | Baja | `simkl.py`, `stats.py` | **v1.1** |
-| **F-03: Valoraciones Tardías** | 📈 Engagement | Media | `storage.py`, `main.py` | **v1.2** |
-| **F-04: Cementerio Dropped** | 💡 Curiosidad | Baja | `stats.py` | **v1.2** |
-| **F-06: Endpoint `/status`** | ⚙️ Observabilidad | Baja | `main.py` | **v1.2** |
+| **PC-01: Transacción Anti-Doble Post** | 🛡️ Estabilidad crítica | Media | `storage.py`, `main.py` | 🟢 Implementado (`v1.0.1`) |
+| **PC-02: Rate Limiter & Flood Protect** | 🛡️ Estabilidad crítica | Media | `storage.py`, `main.py` | 🟢 Implementado (`v1.0.1`) |
+| **PC-03: Deduplicación Anime/Series** | 🛡️ Corrección de bug | Baja | `storage.py` | 🟢 Implementado (`v1.0.1`) |
+| **F-01: Resumen Anual** | ⭐ Alto (Social) | Baja-Media | `stats.py`, `collage.py` | 🟡 Planificado `v1.1` |
+| **PC-04 / 05: Robustez alertas/rotación** | 🛡️ Mantenimiento | Baja | `simkl.py`, `stats.py` | 🟡 Planificado `v1.1` |
+| **F-07: Comentarios Diferidos** | ⭐ Alto (UX nocturna) | Media | `bsky.py`, `main.py` | 🟡 En reposo |
+| **F-03: Valoraciones Tardías** | 📈 Engagement | Media | `storage.py`, `main.py` | 🟡 Planificado `v1.2` |
+| **F-04: Cementerio Dropped** | 💡 Curiosidad | Baja | `stats.py` | 🟡 Planificado `v1.2` |
+| **F-06: Endpoint `/status`** | ⚙️ Observabilidad | Baja | `main.py` | 🟡 Planificado `v1.2` |
 
 ---
 
