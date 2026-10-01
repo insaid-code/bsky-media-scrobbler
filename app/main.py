@@ -99,12 +99,12 @@ def get_platform_tags(link_dest: str, provider: str = "simkl") -> str:
 
 
 def seed_history_if_needed(client, storage: Storage, provider: str = "simkl"):
-    """Siembra el historial inicial para no anunciar cosas del pasado."""
+    """Siembra el historial inicial para no anunciar cosas del pasado (Fase 1: Bootstrap)."""
     if storage.is_seeded():
         return
 
     provider_name = "WeTrakr" if provider == "wetrakr" else "SIMKL"
-    log.info("Iniciando siembra inicial de historial %s (para no publicar registros antiguos)...", provider_name)
+    log.info("Iniciando siembra inicial de historial %s (Fase 1: bootstrap)...", provider_name)
     keys = []
 
     for media_type in MEDIA_TYPES:
@@ -135,8 +135,19 @@ def seed_history_if_needed(client, storage: Storage, provider: str = "simkl"):
         except Exception as e:
             log.error("Error durante la siembra de %s: %s", media_type, e)
 
-    storage.mark_seeded(keys)
-    log.info("✅ Siembra completada: %d registros históricos guardados como anunciados.", len(keys))
+    # Paso clave (Regla de Sincronización Simkl / Phase 1):
+    # Guardar la marca de agua exacta devuelta por /sync/activities
+    bootstrap_sync = None
+    try:
+        activities = client.get_activities()
+        bootstrap_sync = activities.get("all")
+        if not bootstrap_sync and isinstance(activities.get("shows"), dict):
+            bootstrap_sync = activities.get("shows", {}).get("all")
+    except Exception as act_err:
+        log.warning("No se pudo obtener timestamp inicial de actividades: %s", act_err)
+
+    storage.mark_seeded(keys, last_sync=bootstrap_sync)
+    log.info("✅ Siembra completada: %d registros históricos guardados. Marca de agua inicial: %s", len(keys), bootstrap_sync)
 
 
 def process_movies(items: list, storage: Storage, bsky: BlueskyPublisher, provider: str = "simkl", tracker_client=None, max_posts: int = 6) -> tuple[int, bool, str | None]:
@@ -611,47 +622,102 @@ def main():
             post_budget = MAX_POSTS_PER_RUN
             has_more_pending = False
 
-            for media_type in MEDIA_TYPES:
-                if post_budget <= 0:
-                    log.warning("Presupuesto de posts para este ciclo alcanzado (%d posts). Los tipos de medios restantes se evaluarán en la siguiente tanda.", MAX_POSTS_PER_RUN)
-                    has_more_pending = True
-                    break
+            if TRACKER_PROVIDER == "simkl":
+                server_sync = activities.get("all")
+                last_sync = storage.get_last_sync()
 
-                act_key = ACTIVITY_KEYS.get(media_type, media_type)
-                media_act = activities.get(act_key, {})
-                last_server_time = media_act.get("all")
-                last_local_time = storage.get_last_checked(media_type)
-
-                # Si hay actividad posterior a la última comprobada
-                if last_server_time and parse_iso(last_server_time) > parse_iso(last_local_time):
-                    log.info("Detectada nueva actividad para '%s'. Obteniendo ítems...", media_type)
-                    items = tracker_client.get_all_items(media_type, date_from=last_local_time)
-
-                    if media_type == "movies":
-                        posted, more, last_ts = process_movies(
-                            items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
-                        )
-                    else:
-                        posted, more, last_ts = process_shows(
-                            media_type, items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
-                        )
-
-                    post_budget -= posted
-                    if more:
-                        has_more_pending = True
-                        if last_ts:
-                            storage.set_last_checked(media_type, last_ts)
-                    else:
-                        storage.set_last_checked(media_type, last_server_time)
+                # Puerta económica (Regla 7 Simkl):
+                # Si activities.all no ha variado respecto a la marca guardada, no hay nada nuevo que consultar
+                if last_sync and server_sync and server_sync == last_sync:
+                    log.info("Sin nueva actividad en SIMKL (activities.all='%s' sin cambios).", server_sync)
                 else:
-                    log.debug("Sin nueva actividad en '%s'.", media_type)
+                    log.info("Detectada nueva actividad en SIMKL (%s -> %s). Obteniendo delta...", last_sync or "inicio", server_sync)
+                    # Llamada delta unificada para shows, anime y movies (un único request HTTP)
+                    delta = tracker_client.get_all_items(date_from=last_sync)
+                    if isinstance(delta, dict):
+                        # 1. Películas
+                        movie_items = delta.get("movies", [])
+                        if movie_items and post_budget > 0:
+                            posted, more, _ = process_movies(
+                                movie_items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                            )
+                            post_budget -= posted
+                            if more:
+                                has_more_pending = True
+
+                        # 2. Series (shows)
+                        show_items = delta.get("shows", [])
+                        if show_items and post_budget > 0:
+                            posted, more, _ = process_shows(
+                                "shows", show_items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                            )
+                            post_budget -= posted
+                            if more:
+                                has_more_pending = True
+                        elif show_items and post_budget <= 0:
+                            has_more_pending = True
+
+                        # 3. Anime
+                        anime_items = delta.get("anime", [])
+                        if anime_items and post_budget > 0:
+                            posted, more, _ = process_shows(
+                                "anime", anime_items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                            )
+                            post_budget -= posted
+                            if more:
+                                has_more_pending = True
+                        elif anime_items and post_budget <= 0:
+                            has_more_pending = True
+
+                    # Si se procesaron todos los elementos pendientes dentro del presupuesto, avanzamos la marca de agua
+                    if not has_more_pending and server_sync:
+                        storage.set_last_sync(server_sync)
+                    elif has_more_pending:
+                        log.info("Quedan elementos pendientes por el límite por tanda. La marca de agua se mantendrá para completar la sincronización en el siguiente ciclo rápido.")
+
+            else:
+                # Proveedor WeTrakr (por tipo)
+                for media_type in MEDIA_TYPES:
+                    if post_budget <= 0:
+                        log.warning("Presupuesto de posts para este ciclo alcanzado (%d posts). Los tipos de medios restantes se evaluarán en la siguiente tanda.", MAX_POSTS_PER_RUN)
+                        has_more_pending = True
+                        break
+
+                    act_key = ACTIVITY_KEYS.get(media_type, media_type)
+                    media_act = activities.get(act_key, {})
+                    last_server_time = media_act.get("all")
+                    last_local_time = storage.get_last_checked(media_type)
+
+                    # Si hay actividad posterior a la última comprobada
+                    if last_server_time and parse_iso(last_server_time) > parse_iso(last_local_time):
+                        log.info("Detectada nueva actividad para '%s'. Obteniendo ítems...", media_type)
+                        items = tracker_client.get_all_items(media_type, date_from=last_local_time)
+
+                        if media_type == "movies":
+                            posted, more, last_ts = process_movies(
+                                items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                            )
+                        else:
+                            posted, more, last_ts = process_shows(
+                                media_type, items, storage, bsky, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                            )
+
+                        post_budget -= posted
+                        if more:
+                            has_more_pending = True
+                            if last_ts:
+                                storage.set_last_checked(media_type, last_ts)
+                        else:
+                            storage.set_last_checked(media_type, last_server_time)
+                    else:
+                        log.debug("Sin nueva actividad en '%s'.", media_type)
 
         except Exception as e:
             log.error("Excepción durante la comprobación de %s: %s", provider_label, e, exc_info=True)
 
-        # Comprobar informes periódicos, rachas e hitos de forma independiente
+        # Comprobar informes periódicos, rachas e hitos de forma independiente pasando activities
         try:
-            stats_mgr.check_all()
+            stats_mgr.check_all(activities=activities)
         except Exception as stats_err:
             log.warning("Aviso durante la comprobación de estadísticas: %s", stats_err)
 

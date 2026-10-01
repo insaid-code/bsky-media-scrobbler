@@ -161,7 +161,9 @@ class WeTrakrClient:
                 episodes_act = data.get("episodes", {})
                 ep_or_show = episodes_act.get("all") or shows_act.get("all") or data.get("all")
                 movies_time = movies_act.get("all") or data.get("all")
+                global_all = data.get("all") or ep_or_show or movies_time
                 return {
+                    "all": global_all,
                     "shows": {"all": ep_or_show},
                     "tv_shows": {"all": ep_or_show},
                     "anime": {"all": None},

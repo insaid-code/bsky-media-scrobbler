@@ -118,11 +118,11 @@ class StatsManager:
         except Exception:
             return datetime.now()
 
-    def check_all(self):
+    def check_all(self, activities: dict | None = None):
         """Punto de entrada periódico para comprobar informes, rachas e hitos."""
         now = self._now()
-        self.check_streaks(now)
-        self.check_milestones(now)
+        self.check_streaks(now, activities=activities)
+        self.check_milestones(now, activities=activities)
         self.check_weekly(now)
         self.check_monthly(now)
         self.check_fun_fact(now)
@@ -130,9 +130,10 @@ class StatsManager:
     # -------------------------------------------------------------------------
     # 1. CONTADOR DE RACHAS (Streaks)
     # -------------------------------------------------------------------------
-    def check_streaks(self, now: datetime):
+    def check_streaks(self, now: datetime, activities: dict | None = None):
         try:
-            activities = self.simkl.get_activities()
+            if activities is None:
+                activities = self.simkl.get_activities()
             dates = []
             for k in ("tv_shows", "anime", "movies"):
                 ts = activities.get(k, {}).get("all")
@@ -182,11 +183,20 @@ class StatsManager:
     # -------------------------------------------------------------------------
     # 2. HITOS HISTÓRICOS (Milestones)
     # -------------------------------------------------------------------------
-    def check_milestones(self, now: datetime):
+    def check_milestones(self, now: datetime, activities: dict | None = None):
         try:
+            # Puerta de actividad: solo consultar estadísticas globales si ha habido nueva actividad (Regla Simkl)
+            current_sync = activities.get("all") if activities else None
+            last_m_sync = self.storage.get_last_milestone_sync()
+            if current_sync and last_m_sync and current_sync == last_m_sync:
+                return
+
             stats = self.simkl.get_user_stats()
             if not stats:
                 return
+
+            if current_sync:
+                self.storage.set_last_milestone_sync(current_sync)
 
             tv = stats.get("tv", {})
             anime = stats.get("anime", {})
@@ -340,9 +350,15 @@ class StatsManager:
         try:
             start_iso = start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-            shows_items = self.simkl.get_all_items("shows", date_from=start_iso) or []
-            anime_items = self.simkl.get_all_items("anime", date_from=start_iso) or []
-            movie_items = self.simkl.get_all_items("movies", date_from=start_iso) or []
+            if self.provider == "simkl":
+                delta = self.simkl.get_all_items(date_from=start_iso)
+                shows_items = delta.get("shows", []) if isinstance(delta, dict) else []
+                anime_items = delta.get("anime", []) if isinstance(delta, dict) else []
+                movie_items = delta.get("movies", []) if isinstance(delta, dict) else []
+            else:
+                shows_items = self.simkl.get_all_items("shows", date_from=start_iso) or []
+                anime_items = []
+                movie_items = self.simkl.get_all_items("movies", date_from=start_iso) or []
 
             ep_counts_by_show = Counter()
             show_posters = {}
@@ -504,9 +520,15 @@ class StatsManager:
         try:
             start_iso = start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-            shows_items = self.simkl.get_all_items("shows", date_from=start_iso) or []
-            anime_items = self.simkl.get_all_items("anime", date_from=start_iso) or []
-            movie_items = self.simkl.get_all_items("movies", date_from=start_iso) or []
+            if self.provider == "simkl":
+                delta = self.simkl.get_all_items(date_from=start_iso)
+                shows_items = delta.get("shows", []) if isinstance(delta, dict) else []
+                anime_items = delta.get("anime", []) if isinstance(delta, dict) else []
+                movie_items = delta.get("movies", []) if isinstance(delta, dict) else []
+            else:
+                shows_items = self.simkl.get_all_items("shows", date_from=start_iso) or []
+                anime_items = []
+                movie_items = self.simkl.get_all_items("movies", date_from=start_iso) or []
 
             ep_counts_by_show = Counter()
             show_posters = {}
@@ -694,7 +716,9 @@ class StatsManager:
             # Tema 0: Día de la semana y patrón de visionado
             if topic == 0:
                 try:
-                    all_shows = self.simkl.get_all_items("shows") or []
+                    # Consultar el último año para patrones recientes en lugar de todo el historial histórico
+                    one_year_ago = (now_utc - timedelta(days=365)).strftime("%Y-%m-%dT00:00:00Z")
+                    all_shows = self.simkl.get_all_items("shows", date_from=one_year_ago) or []
                     weekdays = Counter()
                     hours = Counter()
 
@@ -750,7 +774,8 @@ class StatsManager:
                 try:
                     # OPT-04: reutilizar all_shows si ya fue cargado en el tema 0
                     if all_shows is None:
-                        all_shows = self.simkl.get_all_items("shows") or []
+                        # Para contar episodios de completadas, solo necesitamos los campos resumen (sin array pesado de episodios)
+                        all_shows = self.simkl.get_all_items("shows", extended=None, episode_watched_at=False, next_watch_info=False) or []
                     c_shows = [
                         s for s in all_shows
                         if s.get("status") == "completed"  # BUG-03: condición única y correcta

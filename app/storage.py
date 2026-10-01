@@ -52,11 +52,17 @@ class Storage:
                         # Asegurar claves mínimas
                         data.setdefault("history_seeded", False)
                         data.setdefault("simkl_token", None)
+                        data.setdefault("last_sync", None)
+                        data.setdefault("last_milestone_sync", None)
                         data.setdefault("last_checked", {
                             "shows": EPOCH_ISO,
                             "anime": EPOCH_ISO,
                             "movies": EPOCH_ISO,
                         })
+                        # Migración suave: si last_sync es None pero last_checked tiene fecha válida, adoptarla
+                        if not data.get("last_sync") and data.get("last_checked", {}).get("shows") != EPOCH_ISO:
+                            data["last_sync"] = data.get("last_checked", {}).get("shows")
+
                         data.setdefault("announced", [])
                         data.setdefault("in_flight", [])  # PC-01: Registro transaccional
                         data.setdefault("recent_phrases", [])
@@ -75,6 +81,8 @@ class Storage:
         return {
             "history_seeded": False,
             "simkl_token": None,
+            "last_sync": None,
+            "last_milestone_sync": None,
             "last_checked": {
                 "shows": EPOCH_ISO,
                 "anime": EPOCH_ISO,
@@ -104,17 +112,18 @@ class Storage:
     def is_seeded(self) -> bool:
         return bool(self.data.get("history_seeded"))
 
-    def mark_seeded(self, announced_keys: list[str]):
+    def mark_seeded(self, announced_keys: list[str], last_sync: str | None = None):
         self.data["history_seeded"] = True
         current_announced = set(self.data.get("announced", []))
         current_announced.update(announced_keys)
         self.data["announced"] = list(current_announced)
-        # Fijar last_checked a ahora mismo para no revisar hacia atrás
-        current_time = now_iso()
+        # Fijar marca de agua exacta del servidor (Regla 7 Simkl) o fecha actual como fallback
+        sync_val = last_sync or now_iso()
+        self.data["last_sync"] = sync_val
         self.data["last_checked"] = {
-            "shows": current_time,
-            "anime": current_time,
-            "movies": current_time,
+            "shows": sync_val,
+            "anime": sync_val,
+            "movies": sync_val,
         }
         self.save()
 
@@ -184,6 +193,28 @@ class Storage:
         if "last_checked" not in self.data:
             self.data["last_checked"] = {}
         self.data["last_checked"][media_type] = timestamp_iso
+        self.save()
+
+    def get_last_sync(self) -> str | None:
+        """Devuelve la marca de agua global ISO de la última sincronización con /sync/activities."""
+        return self.data.get("last_sync")
+
+    def set_last_sync(self, timestamp_iso: str):
+        """Actualiza la marca de agua global del servidor y mantiene coherente last_checked."""
+        self.data["last_sync"] = timestamp_iso
+        if "last_checked" not in self.data or not isinstance(self.data["last_checked"], dict):
+            self.data["last_checked"] = {}
+        for k in ("shows", "anime", "movies"):
+            self.data["last_checked"][k] = timestamp_iso
+        self.save()
+
+    def get_last_milestone_sync(self) -> str | None:
+        """Devuelve la última marca de actividades para la que se verificaron hitos."""
+        return self.data.get("last_milestone_sync")
+
+    def set_last_milestone_sync(self, timestamp_iso: str):
+        """Registra la marca de actividades tras comprobar hitos para evitar llamadas redundantes."""
+        self.data["last_milestone_sync"] = timestamp_iso
         self.save()
 
     def get_token(self) -> str | None:

@@ -6,8 +6,8 @@ import requests
 log = logging.getLogger("bsky-media-scrobbler")
 
 API_BASE = "https://api.simkl.com"
-APP_NAME = "simkl-bluesky"
-APP_VERSION = "1.0.0"
+APP_NAME = "bsky-media-scrobbler"
+APP_VERSION = "1.0.1"
 USER_AGENT = f"{APP_NAME}/{APP_VERSION}"
 
 # Límite de tamaño para las cachés globales de metadatos (Q-02: evitar memory leak)
@@ -153,39 +153,80 @@ class SimklClient:
         resp.raise_for_status()
         return resp.json()
 
-    def get_all_items(self, media_type: str, date_from: str | None = None) -> list:
+    def get_all_items(
+        self,
+        media_type: str | None = None,
+        date_from: str | None = None,
+        extended: str | None = "full",
+        episode_watched_at: bool = True,
+        next_watch_info: bool = True,
+    ) -> list | dict:
         """
-        Obtiene los ítems de series, anime o películas.
-        Con date_from solo devuelve lo modificado/visto a partir de esa fecha.
+        Obtiene los ítems de series, anime o películas desde SIMKL.
+        - Si media_type es None: consulta el endpoint delta unificado /sync/all-items (cubre shows, anime y movies en 1 sola llamada HTTP).
+        - Si media_type se especifica: consulta /sync/all-items/{media_type}.
+        - Con date_from solo devuelve lo modificado/visto a partir de esa fecha exacta de /sync/activities.
         """
-        url = f"{API_BASE}/sync/all-items/{media_type}"
-        params = self._params(extended="full", episode_watched_at="yes")
-        if date_from:
-            params["date_from"] = date_from
+        if media_type:
+            url = f"{API_BASE}/sync/all-items/{media_type}"
+        else:
+            url = f"{API_BASE}/sync/all-items"
 
+        extra_params = {}
+        if extended:
+            extra_params["extended"] = extended
+
+        # Las películas no tienen episodios ni next_to_watch
+        if media_type != "movies":
+            if episode_watched_at and extended == "full":
+                extra_params["episode_watched_at"] = "yes"
+            if next_watch_info:
+                extra_params["next_watch_info"] = "yes"
+
+        if date_from:
+            extra_params["date_from"] = date_from
+
+        params = self._params(**extra_params)
         resp = self._get(url, params=params, timeout=60)
         resp.raise_for_status()
         data = resp.json()
 
+        if media_type:
+            if isinstance(data, dict):
+                return data.get(media_type, [])
+            return data or []
+
         if isinstance(data, dict):
-            return data.get(media_type, [])
-        return data or []
+            return data
+        return {}
 
     def get_user_stats(self, user_id: str | int | None = None) -> dict:
         """Obtiene las estadísticas globales de visionado del usuario desde SIMKL."""
         if not user_id:
             try:
-                settings_resp = self._get(
+                # POST /users/settings en SIMKL V2
+                settings_resp = self.session.post(
                     f"{API_BASE}/users/settings",
+                    headers=self._headers(),
                     params=self._params(),
                     timeout=15,
                 )
+                if settings_resp.status_code == 401 and self.refresh_token_str:
+                    if self.refresh_access_token():
+                        settings_resp = self.session.post(
+                            f"{API_BASE}/users/settings",
+                            headers=self._headers(),
+                            params=self._params(),
+                            timeout=15,
+                        )
                 if settings_resp.status_code == 200:
                     user_id = settings_resp.json().get("account", {}).get("id")
             except Exception as e:
                 log.debug("No se pudo obtener account ID para stats: %s", e)
-            if not user_id:
-                user_id = 8077243
+
+        if not user_id:
+            log.warning("No se pudo resolver el user_id para las estadísticas de SIMKL.")
+            return {}
 
         try:
             url = f"{API_BASE}/users/{user_id}/stats"
