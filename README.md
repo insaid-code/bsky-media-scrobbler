@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker" alt="Docker Ready" />
   <img src="https://img.shields.io/badge/Bluesky-AT%20Protocol-0085ff.svg?logo=bluesky" alt="Bluesky" />
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License" />
+  <a href="https://ko-fi.com/insaid"><img src="https://img.shields.io/badge/Ko--fi-Donate-F16061?logo=ko-fi&logoColor=white" alt="Ko-fi" /></a>
 </p>
 
 An autonomous Python container for Docker that monitors your media activity on your favorite tracking platforms (**WeTrakr**, **SIMKL**) and publishes enriched scrobbles to **Bluesky** with **TMDB** external cards, high-definition poster collages, closed reporting periods, and daily viewing streak counters.
@@ -88,6 +89,18 @@ docker compose up -d
 * [atproto](https://github.com/MarshalX/atproto) - Official AT Protocol SDK for Bluesky.
 * [Pillow (PIL)](https://python-pillow.org/) - Graphic composition engine for high-resolution collages.
 * [Requests](https://requests.readthedocs.io/) - HTTP client for WeTrakr, SIMKL, and TMDB APIs.
+
+---
+
+## ☕ Support the Project
+
+If `bsky-media-scrobbler` adds value to your Bluesky timeline, saves you time, or you just enjoy using it, consider buying me a coffee! Any support is greatly appreciated and helps keep the project maintained.
+
+<p align="center">
+  <a href="https://ko-fi.com/insaid">
+    <img src="https://storage.ko-fi.com/cdn/kofi3.png?v=3" height="38" alt="Buy Me a Coffee at ko-fi.com" />
+  </a>
+</p>
 
 ---
 

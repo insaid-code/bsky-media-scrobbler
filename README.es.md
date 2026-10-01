@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker" alt="Docker Ready" />
   <img src="https://img.shields.io/badge/Bluesky-AT%20Protocol-0085ff.svg?logo=bluesky" alt="Bluesky" />
   <img src="https://img.shields.io/badge/Licencia-MIT-green.svg" alt="Licencia MIT" />
+  <a href="https://ko-fi.com/insaid"><img src="https://img.shields.io/badge/Ko--fi-Donar-F16061?logo=ko-fi&logoColor=white" alt="Ko-fi" /></a>
 </p>
 
 Bot autónomo en Python para Docker que monitoriza tu actividad en tus plataformas de seguimiento favoritas (**WeTrakr**, **SIMKL**) y la publica de forma enriquecida en **Bluesky** con tarjetas externas hacia **TMDB**, collages visuales en alta definición, balances periódicos y contador de rachas.
@@ -88,6 +89,18 @@ docker compose up -d
 * [atproto](https://github.com/MarshalX/atproto) - SDK oficial para el protocolo AT de Bluesky.
 * [Pillow (PIL)](https://python-pillow.org/) - Motor de composición gráfica de collages en alta definición.
 * [Requests](https://requests.readthedocs.io/) - Cliente HTTP para consumo de APIs de WeTrakr, SIMKL y TMDB.
+
+---
+
+## ☕ Apoya el Proyecto
+
+Si `bsky-media-scrobbler` te resulta útil, le da vida a tu feed de Bluesky o te ahorra tiempo agrupando tus maratones, ¡considera invitarme a un café! Cualquier apoyo es enormemente agradecido y ayuda a mantener el proyecto activo.
+
+<p align="center">
+  <a href="https://ko-fi.com/insaid">
+    <img src="https://storage.ko-fi.com/cdn/kofi3.png?v=3" height="38" alt="Invítame a un café en ko-fi.com" />
+  </a>
+</p>
 
 ---
 
