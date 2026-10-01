@@ -17,11 +17,12 @@ Este documento detalla todas las variables de entorno, opciones de personalizaci
 | `SIMKL_USER_TOKEN` | Texto | *(opcional)* | Token de acceso del usuario en SIMKL. Si se omite, el bot iniciará el flujo interactivo de autorización por código PIN (`Device Auth`). |
 | `BSKY_HANDLE` | Texto | — | Identificador de tu cuenta en Bluesky (ej. `mi-cuenta.bsky.social`). |
 | `BSKY_APP_PASSWORD` | Texto | — | Contraseña de aplicación generada en Bluesky (*Ajustes ➜ Privacidad y seguridad ➜ Contraseñas de aplicación*). Nunca uses tu contraseña principal. |
-| `BSKY_LANG` | Texto | `es` | Código de idioma para los posts (ej. `es`, `en`). Aplica la etiqueta AT-Protocol `langs` y selecciona el archivo base de frases (`locales/es.json`). |
+| `BSKY_LANG` | Texto | `es` | Código de idioma para los posts (ej. `es`, `en`, `ca`). Aplica la etiqueta AT-Protocol `langs` y selecciona el archivo base de frases (`locales/es.json`). |
 | `POLL_INTERVAL_MINUTES` | Entero | `90` | Frecuencia de sondeo en minutos. Un valor de `90` minutos es el óptimo recomendado para permitir agrupar episodios vistos en sesión continua (maratón). |
+| `MAX_POSTS_PER_RUN` | Entero | `6` | Límite máximo de publicaciones a Bluesky por ciclo. Previene ráfagas masivas y bloqueos antispam tras caídas o desconexiones. |
+| `POST_DELAY_SECONDS` | Entero | `5` | Pausa de cortesía en segundos entre publicaciones consecutivas dentro de un mismo ciclo. |
 | `LINK_DESTINATION` | Texto | `tmdb` | Destino de las tarjetas enriquecidas (`external embeds`). Valores: `tmdb` (The Movie Database), `wetrakr`, `simkl` o `imdb`. |
 | `TZ` | Texto | `Europe/Madrid` | Zona horaria del sistema. Esencial para calcular correctamente las franjas horarias de madrugada, mañana, sobremesa, los días de la semana y los cierres de balances. |
-| `PUID` / `PGID` | Entero | `1026` / `100` | Identificadores de usuario y grupo para la gestión de permisos en volúmenes persistentes en sistemas NAS (Synology, Unraid, TrueNAS). |
 
 ---
 
@@ -44,44 +45,38 @@ volumes:
 
 ## 🚀 Despliegue en Docker Compose / Dockge
 
-Crea el archivo `compose.yaml` (utilizando la especificación moderna sin atributo obsoleto `version`):
+Crea el archivo `compose.yaml` (utilizando la especificación moderna de Compose v2):
 
 ```yaml
 services:
   bsky-media-scrobbler:
-    image: python:3.12-slim
+    build: .
+    image: bsky-media-scrobbler:latest
     container_name: bsky-media-scrobbler
     restart: unless-stopped
-    working_dir: /app
-    command: >
-      sh -c "pip install --no-cache-dir -r requirements.txt && python -u main.py"
-    mem_limit: 512m
+    mem_limit: 256m
     environment:
       - TZ=Europe/Madrid
-      - PUID=1026
-      - PGID=100
       - PYTHONUNBUFFERED=1
       - DRY_RUN=${DRY_RUN:-false}
-      - TRACKER_PROVIDER=${TRACKER_PROVIDER:-wetrakr}
-      - WETRAKR_CLIENT_ID=${WETRAKR_CLIENT_ID}
-      - WETRAKR_CLIENT_SECRET=${WETRAKR_CLIENT_SECRET}
+      - TRACKER_PROVIDER=${TRACKER_PROVIDER:-simkl}
       - SIMKL_CLIENT_ID=${SIMKL_CLIENT_ID}
       - SIMKL_USER_TOKEN=${SIMKL_USER_TOKEN}
+      - WETRAKR_CLIENT_ID=${WETRAKR_CLIENT_ID}
+      - WETRAKR_CLIENT_SECRET=${WETRAKR_CLIENT_SECRET}
       - BSKY_HANDLE=${BSKY_HANDLE}
       - BSKY_APP_PASSWORD=${BSKY_APP_PASSWORD}
       - BSKY_LANG=${BSKY_LANG:-es}
       - POLL_INTERVAL_MINUTES=${POLL_INTERVAL_MINUTES:-90}
+      - MAX_POSTS_PER_RUN=${MAX_POSTS_PER_RUN:-6}
+      - POST_DELAY_SECONDS=${POST_DELAY_SECONDS:-5}
       - LINK_DESTINATION=${LINK_DESTINATION:-tmdb}
     volumes:
       - ./app:/app
       - ./data:/data
-    networks:
-      - my_network
-
-networks:
-  my_network:
-    external: true
 ```
+
+> **Nota para usuarios avanzados (Proxy inverso / Dockge):** Si utilizas una red puente compartida (por ejemplo, con Cloudflare Tunnel, Nginx Proxy Manager o Traefik), simplemente agrega tu bloque `networks:` al servicio. Para el 99% de los usuarios, la configuración estándar anterior funciona directamente *out of the box*.
 
 ---
 
