@@ -475,7 +475,7 @@ class StatsManager:
     # -------------------------------------------------------------------------
     # 4. RESUMEN MENSUAL CON COLLAGE (Día 1 del mes 09:30h+)
     # -------------------------------------------------------------------------
-    def check_monthly(self, now: datetime, force: bool = False, target_count: int = 4):
+    def check_monthly(self, now: datetime, force: bool = False, target_count: int = 9):
         now_utc = now.astimezone(timezone.utc) if now.tzinfo else now.replace(tzinfo=timezone.utc)
 
         # Cálculo del mes natural cerrado (Día 1 00:00:00 al último día 23:59:59):

@@ -123,10 +123,21 @@ class Storage:
         self.save()
 
     def get_token(self) -> str | None:
-        return self.data.get("simkl_token")
+        val = self.data.get("simkl_token")
+        if isinstance(val, dict):
+            return val.get("access_token")
+        return val
 
-    def set_token(self, token: str):
-        self.data["simkl_token"] = token
+    def get_simkl_token_data(self) -> dict | None:
+        val = self.data.get("simkl_token")
+        if isinstance(val, dict):
+            return val
+        if isinstance(val, str):
+            return {"access_token": val}
+        return None
+
+    def set_token(self, token_data: dict | str | None):
+        self.data["simkl_token"] = token_data
         self.save()
 
     def get_wetrakr_token(self) -> dict | None:

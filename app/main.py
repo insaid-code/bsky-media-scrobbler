@@ -467,11 +467,29 @@ def main():
             log.critical("Falta SIMKL_CLIENT_ID en las variables de entorno.")
             sys.exit(1)
 
-        token = SIMKL_USER_TOKEN or storage.get_token()
-        tracker_client = SimklClient(SIMKL_CLIENT_ID, token)
+        simkl_data = storage.get_simkl_token_data() or {}
+        token = SIMKL_USER_TOKEN or simkl_data.get("access_token")
+        refresh_token = simkl_data.get("refresh_token")
 
-        if not token:
-            log.info("No se ha configurado SIMKL_USER_TOKEN. Iniciando autorización PIN...")
+        tracker_client = SimklClient(
+            client_id=SIMKL_CLIENT_ID,
+            token=token,
+            refresh_token=refresh_token,
+            on_token_refreshed=storage.set_token,
+        )
+
+        is_token_valid = False
+        if token:
+            try:
+                tracker_client.get_activities()
+                is_token_valid = True
+            except Exception as auth_err:
+                log.warning("Token SIMKL no válido o caducado (%s). Intentando renovación...", auth_err)
+                if refresh_token and tracker_client.refresh_access_token():
+                    is_token_valid = True
+
+        if not is_token_valid:
+            log.info("Iniciando autorización interactiva PIN en SIMKL...")
             try:
                 pin_data = tracker_client.start_device_flow()
                 user_code = pin_data["user_code"]
@@ -482,20 +500,22 @@ def main():
                 log.info("=================================================================")
                 log.info("👉 Entra en: %s", verification_url)
                 log.info("👉 Introduce el código: %s", user_code)
+                log.info("👉 O entra directamente en: %s", pin_data.get("verification_uri_complete", f"{verification_url}?user_code={user_code}"))
                 log.info("=================================================================")
 
                 elapsed = 0
                 while elapsed < expires_in:
                     time.sleep(pin_data.get("interval", 5))
                     elapsed += 5
-                    token = tracker_client.poll_device_token(device_code)
-                    if token:
+                    token_dict = tracker_client.poll_device_token(device_code)
+                    if token_dict and token_dict.get("access_token"):
                         log.info("✅ Autorización de SIMKL completada con éxito.")
-                        storage.set_token(token)
-                        tracker_client.token = token
+                        storage.set_token(token_dict)
+                        tracker_client.token = token_dict.get("access_token")
+                        tracker_client.refresh_token_str = token_dict.get("refresh_token")
                         break
 
-                if not token:
+                if not tracker_client.token:
                     log.critical("El código PIN de SIMKL ha caducado. Reinicia el contenedor.")
                     sys.exit(1)
             except Exception as e:
@@ -549,14 +569,14 @@ def main():
                 else:
                     log.debug("Sin nueva actividad en '%s'.", media_type)
 
-            # Comprobar informes periódicos, rachas e hitos
-            try:
-                stats_mgr.check_all()
-            except Exception as stats_err:
-                log.warning("Aviso durante la comprobación de estadísticas: %s", stats_err)
-
         except Exception as e:
             log.error("Excepción durante la comprobación de %s: %s", provider_label, e, exc_info=True)
+
+        # Comprobar informes periódicos, rachas e hitos de forma independiente
+        try:
+            stats_mgr.check_all()
+        except Exception as stats_err:
+            log.warning("Aviso durante la comprobación de estadísticas: %s", stats_err)
 
         log.info("Próxima comprobación en %d minutos.", POLL_INTERVAL_MINUTES)
         sleep_until = time.time() + (POLL_INTERVAL_MINUTES * 60)

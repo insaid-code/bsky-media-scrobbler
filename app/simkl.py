@@ -24,9 +24,17 @@ def parse_iso(value: str | None) -> datetime:
 
 
 class SimklClient:
-    def __init__(self, client_id: str, token: str | None = None):
-        self.client_id = client_id
-        self.token = token
+    def __init__(
+        self,
+        client_id: str,
+        token: str | None = None,
+        refresh_token: str | None = None,
+        on_token_refreshed=None,
+    ):
+        self.client_id = client_id.strip() if client_id else ""
+        self.token = token.strip() if token else None
+        self.refresh_token_str = refresh_token.strip() if refresh_token else None
+        self.on_token_refreshed = on_token_refreshed
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": USER_AGENT})
 
@@ -62,7 +70,7 @@ class SimklClient:
         resp.raise_for_status()
         return resp.json()
 
-    def poll_device_token(self, device_code: str) -> str | None:
+    def poll_device_token(self, device_code: str) -> dict | None:
         url = f"{API_BASE}/oauth2/token"
         data = {
             "client_id": self.client_id,
@@ -74,8 +82,55 @@ class SimklClient:
         resp = self.session.post(url, data=data)
         if resp.status_code == 200:
             body = resp.json()
-            return body.get("access_token")
+            return {
+                "access_token": body.get("access_token"),
+                "refresh_token": body.get("refresh_token"),
+            }
         return None
+
+    def refresh_access_token(self) -> bool:
+        """Renueva el access_token de SIMKL utilizando el refresh_token almacenado."""
+        if not self.refresh_token_str:
+            log.warning("No hay refresh_token disponible para renovar token de SIMKL.")
+            return False
+
+        url = f"{API_BASE}/oauth2/token"
+        data = {
+            "client_id": self.client_id,
+            "grant_type": "refresh_token",
+            "refresh_token": self.refresh_token_str,
+            "app-name": APP_NAME,
+            "app-version": APP_VERSION,
+        }
+        try:
+            resp = self.session.post(url, data=data, timeout=15)
+            if resp.status_code == 200:
+                body = resp.json()
+                new_acc = body.get("access_token")
+                new_ref = body.get("refresh_token") or self.refresh_token_str
+                if new_acc:
+                    self.token = new_acc
+                    self.refresh_token_str = new_ref
+                    log.info("Token de acceso de SIMKL renovado con éxito mediante refresh_token.")
+                    if self.on_token_refreshed:
+                        self.on_token_refreshed({
+                            "access_token": new_acc,
+                            "refresh_token": new_ref,
+                        })
+                    return True
+            log.error("Fallo al renovar token de SIMKL: HTTP %d - %s", resp.status_code, resp.text)
+        except Exception as e:
+            log.error("Excepción al renovar token de SIMKL: %s", e)
+        return False
+
+    def _get(self, url: str, params: dict | None = None, timeout: int = 30) -> requests.Response:
+        """Realiza una petición GET autenticada con reintento automático si expira el token."""
+        resp = self.session.get(url, headers=self._headers(), params=params, timeout=timeout)
+        if resp.status_code == 401 and self.refresh_token_str:
+            log.info("Token de SIMKL caducado (401). Intentando renovación automática...")
+            if self.refresh_access_token():
+                resp = self.session.get(url, headers=self._headers(), params=params, timeout=timeout)
+        return resp
 
     # -------------------------------------------------------------------------
     # API endpoints principales
@@ -83,7 +138,7 @@ class SimklClient:
     def get_activities(self) -> dict:
         """Obtiene las marcas de tiempo de la última actividad del usuario."""
         url = f"{API_BASE}/sync/activities"
-        resp = self.session.get(url, headers=self._headers(), params=self._params(), timeout=30)
+        resp = self._get(url, params=self._params(), timeout=30)
         resp.raise_for_status()
         return resp.json()
 
@@ -97,7 +152,7 @@ class SimklClient:
         if date_from:
             params["date_from"] = date_from
 
-        resp = self.session.get(url, headers=self._headers(), params=params, timeout=60)
+        resp = self._get(url, params=params, timeout=60)
         resp.raise_for_status()
         data = resp.json()
 
@@ -109,9 +164,8 @@ class SimklClient:
         """Obtiene las estadísticas globales de visionado del usuario desde SIMKL."""
         if not user_id:
             try:
-                settings_resp = self.session.get(
+                settings_resp = self._get(
                     f"{API_BASE}/users/settings",
-                    headers=self._headers(),
                     params=self._params(),
                     timeout=15,
                 )
@@ -124,7 +178,7 @@ class SimklClient:
 
         try:
             url = f"{API_BASE}/users/{user_id}/stats"
-            resp = self.session.get(url, headers=self._headers(), params=self._params(), timeout=20)
+            resp = self._get(url, params=self._params(), timeout=20)
             if resp.status_code == 200:
                 data = resp.json()
                 if isinstance(data, dict):
