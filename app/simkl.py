@@ -46,6 +46,7 @@ class SimklClient:
         self.token = token.strip() if token else None
         self.refresh_token_str = refresh_token.strip() if refresh_token else None
         self.on_token_refreshed = on_token_refreshed
+        self._account_id = None
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": USER_AGENT})
 
@@ -202,34 +203,27 @@ class SimklClient:
 
     def get_user_stats(self, user_id: str | int | None = None) -> dict:
         """Obtiene las estadísticas globales de visionado del usuario desde SIMKL."""
-        if not user_id:
+        target_id = user_id or self._account_id
+        if not target_id:
             try:
-                # POST /users/settings en SIMKL V2
-                settings_resp = self.session.post(
+                # GET /users/settings en SIMKL V2 para resolver el account.id autenticado
+                settings_resp = self._get(
                     f"{API_BASE}/users/settings",
-                    headers=self._headers(),
                     params=self._params(),
                     timeout=15,
                 )
-                if settings_resp.status_code == 401 and self.refresh_token_str:
-                    if self.refresh_access_token():
-                        settings_resp = self.session.post(
-                            f"{API_BASE}/users/settings",
-                            headers=self._headers(),
-                            params=self._params(),
-                            timeout=15,
-                        )
                 if settings_resp.status_code == 200:
-                    user_id = settings_resp.json().get("account", {}).get("id")
+                    target_id = settings_resp.json().get("account", {}).get("id")
+                    self._account_id = target_id
             except Exception as e:
                 log.debug("No se pudo obtener account ID para stats: %s", e)
 
-        if not user_id:
+        if not target_id:
             log.warning("No se pudo resolver el user_id para las estadísticas de SIMKL.")
             return {}
 
         try:
-            url = f"{API_BASE}/users/{user_id}/stats"
+            url = f"{API_BASE}/users/{target_id}/stats"
             resp = self._get(url, params=self._params(), timeout=20)
             if resp.status_code == 200:
                 data = resp.json()
