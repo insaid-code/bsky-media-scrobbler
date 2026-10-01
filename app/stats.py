@@ -688,6 +688,8 @@ class StatsManager:
             total_started = tv_completed + tv_watching
 
             text = ""
+            # Centinela para OPT-04: evitar doble llamada HTTP a get_all_items("shows")
+            all_shows = None
 
             # Tema 0: Día de la semana y patrón de visionado
             if topic == 0:
@@ -747,7 +749,7 @@ class StatsManager:
             if not text and (topic == 1 or topic == 0):
                 try:
                     # OPT-04: reutilizar all_shows si ya fue cargado en el tema 0
-                    if "all_shows" not in dir():
+                    if all_shows is None:
                         all_shows = self.simkl.get_all_items("shows") or []
                     c_shows = [
                         s for s in all_shows
