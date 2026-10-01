@@ -3,7 +3,7 @@ import logging
 import requests
 from PIL import Image
 
-log = logging.getLogger("simkl-bluesky")
+log = logging.getLogger("bsky-media-scrobbler")
 
 
 def create_poster_collage(
@@ -93,12 +93,13 @@ def create_poster_collage(
     jpeg_bytes = output.getvalue()
 
     # Asegurar que no supere 950KB (límite de Bluesky es 1MB por imagen)
+    # OPT-14: pasos de 5 en lugar de 10 para degradación más gradual de calidad
     quality = 80
     while len(jpeg_bytes) > 950_000 and quality > 40:
         output = io.BytesIO()
-        canvas.save(output, format="JPEG", quality=quality, optimize=True)
+        canvas.save(output, format="JPEG", quality=quality, optimize=True, progressive=True)
         jpeg_bytes = output.getvalue()
-        quality -= 10
+        quality -= 5
 
     log.info("Collage generado con éxito (%d imágenes, %d bytes).", len(images), len(jpeg_bytes))
     return jpeg_bytes

@@ -2,7 +2,7 @@ import logging
 import requests
 from atproto import Client, models
 
-log = logging.getLogger("simkl-bluesky")
+log = logging.getLogger("bsky-media-scrobbler")
 
 
 class BlueskyPublisher:
@@ -103,10 +103,12 @@ class BlueskyPublisher:
                 )
             )
 
-        # Límite estricto de AT Protocol (Bluesky): máximo 300 grafemas
+        # Límite estricto de AT Protocol (Bluesky): máximo 300 grafemas Unicode.
+        # Python mide len() sobre code points (no bytes), lo que es equivalente a grafemas
+        # en la mayoría de casos. Usamos 295 como margen extra de seguridad.
         if len(text) > 300:
             log.warning("El texto del post supera los 300 caracteres (%d). Recortando de forma segura...", len(text))
-            text = text[:296] + "..."
+            text = text[:295] + "..."
 
         try:
             # send_post analiza y añade automáticamente las facetas para hashtags y menciones

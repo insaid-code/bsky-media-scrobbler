@@ -9,7 +9,10 @@ from phrases import get_engagement_question
 from simkl import SimklClient, get_poster_url, parse_iso
 from storage import Storage
 
-log = logging.getLogger("simkl-bluesky")
+log = logging.getLogger("bsky-media-scrobbler")
+
+# Estados de seguimiento que deben ignorarse en todos los cálculos y balances
+EXCLUDED_STATUSES = frozenset({"dropped", "notinteresting", "abandoned", "hold"})
 
 MONTH_NAMES = {
     "es": [
@@ -347,7 +350,7 @@ class StatsManager:
             exact_watched_mins = 0
 
             for item in shows_items + anime_items:
-                if item.get("status") in ("dropped", "notinteresting", "abandoned"):
+                if item.get("status") in EXCLUDED_STATUSES:
                     log.debug("Ignorando serie descartada (dropped) en balance semanal: %s", (item.get("show") or {}).get("title"))
                     continue
                 show = item.get("show") or {}
@@ -512,7 +515,7 @@ class StatsManager:
             completed_shows = []
 
             for item in shows_items + anime_items:
-                if item.get("status") in ("dropped", "notinteresting", "abandoned"):
+                if item.get("status") in EXCLUDED_STATUSES:
                     log.debug("Ignorando serie descartada (dropped) en balance mensual: %s", (item.get("show") or {}).get("title"))
                     continue
                 show = item.get("show") or {}
@@ -694,7 +697,7 @@ class StatsManager:
                     hours = Counter()
 
                     for item in all_shows:
-                        if item.get("status") in ("dropped", "notinteresting", "abandoned"):
+                        if item.get("status") in EXCLUDED_STATUSES:
                             continue
                         for season in item.get("seasons", []):
                             for ep in season.get("episodes", []):
@@ -743,10 +746,12 @@ class StatsManager:
             # Tema 1: La serie más larga completada
             if not text and (topic == 1 or topic == 0):
                 try:
-                    completed_shows = self.simkl.get_all_items("shows") or []
+                    # OPT-04: reutilizar all_shows si ya fue cargado en el tema 0
+                    if "all_shows" not in dir():
+                        all_shows = self.simkl.get_all_items("shows") or []
                     c_shows = [
-                        s for s in completed_shows
-                        if s.get("status") == "completed" and s.get("status") not in ("dropped", "notinteresting", "abandoned")
+                        s for s in all_shows
+                        if s.get("status") == "completed"  # BUG-03: condición única y correcta
                     ]
                     if c_shows:
                         longest = max(c_shows, key=lambda x: x.get("watched_episodes_count", 0))

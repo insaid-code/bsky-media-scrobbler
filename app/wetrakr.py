@@ -3,7 +3,7 @@ import time
 from datetime import datetime, timezone
 import requests
 
-log = logging.getLogger("simkl-bluesky")
+log = logging.getLogger("bsky-media-scrobbler")
 
 API_BASE = "https://api.wetrakr.com"
 APP_NAME = "bsky-media-scrobbler"
@@ -39,6 +39,11 @@ class WeTrakrClient:
         self.on_token_refreshed = on_token_refreshed
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": USER_AGENT})
+        # Q-03: Inicialización de cachés en __init__ (no lazy dentro de métodos)
+        self._movie_cache: dict = {}
+        self._show_cache: dict = {}
+        self._dropped_cache: set = set()
+        self._dropped_cache_time: float = 0.0
 
     def _headers(self) -> dict:
         headers = {
@@ -172,8 +177,6 @@ class WeTrakrClient:
     def get_movie_details(self, movie_id: int | str) -> dict:
         if not movie_id:
             return {}
-        if not hasattr(self, "_movie_cache"):
-            self._movie_cache = {}
         if movie_id in self._movie_cache:
             return self._movie_cache[movie_id]
         url = f"{API_BASE}/movies/{movie_id}"
@@ -190,8 +193,6 @@ class WeTrakrClient:
     def get_show_details(self, show_id: int | str) -> dict:
         if not show_id:
             return {}
-        if not hasattr(self, "_show_cache"):
-            self._show_cache = {}
         if show_id in self._show_cache:
             return self._show_cache[show_id]
         url = f"{API_BASE}/shows/{show_id}"
@@ -329,7 +330,7 @@ class WeTrakrClient:
     def get_dropped_show_ids(self) -> set:
         """Obtiene el conjunto de IDs (WeTrakr y TMDB) de series marcadas como dropped."""
         now = time.time()
-        if not hasattr(self, "_dropped_cache") or (now - getattr(self, "_dropped_cache_time", 0) > 300):
+        if now - self._dropped_cache_time > 300:
             self._dropped_cache = set()
             try:
                 url = f"{API_BASE}/sync/tracking/dropped/shows"

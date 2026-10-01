@@ -3,7 +3,7 @@ import logging
 import os
 from datetime import date, datetime, timezone
 
-log = logging.getLogger("simkl-bluesky")
+log = logging.getLogger("bsky-media-scrobbler")
 
 DEFAULT_STATE_FILE = os.getenv("STATE_FILE", "/data/state.json")
 EPOCH_ISO = "1970-01-01T00:00:00Z"
@@ -105,12 +105,15 @@ class Storage:
         return set(self.data.get("announced", []))
 
     def add_announced(self, keys: list[str]):
-        current = set(self.data.get("announced", []))
-        current.update(keys)
-        # Limitar historial de anunciados si crece demasiado (ej. conservar últimos 10.000)
-        if len(current) > 15000:
-            current = set(list(current)[-10000:])
-        self.data["announced"] = list(current)
+        # Operar sobre la lista serializada (con orden de inserción garantizado)
+        current_list = self.data.get("announced", [])
+        current_set = set(current_list)
+        new_keys = [k for k in keys if k not in current_set]
+        current_list = current_list + new_keys
+        # Limitar historial de anunciados conservando los MÁS RECIENTES (BUG-01 fix)
+        if len(current_list) > 15000:
+            current_list = current_list[-10000:]
+        self.data["announced"] = current_list
         self.save()
 
     def get_last_checked(self, media_type: str) -> str:

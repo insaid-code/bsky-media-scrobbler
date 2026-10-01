@@ -505,8 +505,9 @@ def main():
 
                 elapsed = 0
                 while elapsed < expires_in:
-                    time.sleep(pin_data.get("interval", 5))
-                    elapsed += 5
+                    interval = pin_data.get("interval", 5)
+                    time.sleep(interval)
+                    elapsed += interval
                     token_dict = tracker_client.poll_device_token(device_code)
                     if token_dict and token_dict.get("access_token"):
                         log.info("✅ Autorización de SIMKL completada con éxito.")

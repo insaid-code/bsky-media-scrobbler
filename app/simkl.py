@@ -3,12 +3,23 @@ import time
 from datetime import datetime, timezone
 import requests
 
-log = logging.getLogger("simkl-bluesky")
+log = logging.getLogger("bsky-media-scrobbler")
 
 API_BASE = "https://api.simkl.com"
 APP_NAME = "simkl-bluesky"
 APP_VERSION = "1.0.0"
 USER_AGENT = f"{APP_NAME}/{APP_VERSION}"
+
+# Límite de tamaño para las cachés globales de metadatos (Q-02: evitar memory leak)
+_CACHE_MAX_SIZE = 200
+
+
+def _cache_set(cache: dict, key, value) -> None:
+    """Inserta en caché respetando el tamaño máximo (elimina la entrada más antigua si se supera)."""
+    if len(cache) >= _CACHE_MAX_SIZE:
+        oldest_key = next(iter(cache))
+        del cache[oldest_key]
+    cache[key] = value
 
 
 def parse_iso(value: str | None) -> datetime:
@@ -66,7 +77,7 @@ class SimklClient:
             "app-name": APP_NAME,
             "app-version": APP_VERSION,
         }
-        resp = self.session.post(url, data=data)
+        resp = self.session.post(url, data=data, timeout=15)
         resp.raise_for_status()
         return resp.json()
 
@@ -249,7 +260,7 @@ def get_show_episodes(simkl_id: int | str, client_id: str) -> list[dict]:
         if resp.status_code == 200:
             data = resp.json()
             if isinstance(data, list):
-                SHOW_EPISODES_CACHE[simkl_id_int] = data
+                _cache_set(SHOW_EPISODES_CACHE, simkl_id_int, data)
                 return data
     except Exception as e:
         log.warning("No se pudieron obtener episodios para simkl_id %s: %s", simkl_id, e)
@@ -271,7 +282,7 @@ def get_show_details(simkl_id: int | str, client_id: str) -> dict:
         if resp.status_code == 200:
             data = resp.json()
             if isinstance(data, dict):
-                SHOW_DETAILS_CACHE[simkl_id_int] = data
+                _cache_set(SHOW_DETAILS_CACHE, simkl_id_int, data)
                 return data
     except Exception as e:
         log.warning("No se pudieron obtener detalles para simkl_id %s: %s", simkl_id, e)
@@ -368,9 +379,7 @@ def evaluate_season_status(
                 else:
                     is_finale = False
                     real_max_ep = 0
-        else:
-            if season_num < max_catalog_season:
-                is_finale = True
+        # D) Ningún otro caso (show_status desconocido o vacío): no es finale
 
     # Si no es final de temporada, verificar si ha quedado al día con el último emitido
     if not is_finale:

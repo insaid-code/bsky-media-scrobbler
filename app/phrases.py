@@ -362,7 +362,7 @@ def get_movie_phrase(
     is_night = 0 <= current_hour <= 5
     is_weekend = current_weekday in (4, 5, 6)
     year_str = f" ({year})" if year else ""
-    current_year = datetime.now().year
+    current_year = now.year
 
     ctx = {
         "movie_title": movie_title,
