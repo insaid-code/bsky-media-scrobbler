@@ -48,6 +48,7 @@ Para consultar guías detalladas paso a paso sobre cada módulo del proyecto:
 * ✍️ **[Motor de Frases Personalizadas y Multi-idioma (`docs/es/FRASES_PERSONALIZADAS.md`)](docs/es/FRASES_PERSONALIZADAS.md):** Cómo crear tu propio `custom_phrases.json`, variables disponibles (`{show_title}`, `{season_num}`...), modos suma vs reemplazo y recarga en caliente.
 * 📊 **[Estadísticas, Informes y Collages Visuales (`docs/es/ESTADISTICAS.md`)](docs/es/ESTADISTICAS.md):** Calendario de balances, especificaciones de imagen de Pillow y configuración en OliveTin.
 * 🔌 **[Proveedores de Seguimiento: WeTrakr y SIMKL (`docs/es/PROVEEDORES.md`)](docs/es/PROVEEDORES.md):** Obtención de API keys, flujo de autorización por código PIN (`Device Auth`) y renovación automática de tokens.
+* 🗺️ **[Roadmap del Proyecto (`ROADMAP.md`)](ROADMAP.md):** Funcionalidades planificadas, control de bugs latentes y prioridades de versión.
 
 ---
 

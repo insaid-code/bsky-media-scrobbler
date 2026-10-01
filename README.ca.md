@@ -48,6 +48,7 @@ Per consultar guies detallades pas a pas sobre cada mòdul del projecte:
 * ✍️ **[Motor de Frases Personalitzades (`docs/ca/FRASES_PERSONALITZADES.md`)](docs/ca/FRASES_PERSONALITZADES.md):** Com crear el teu propi `custom_phrases.json`, variables disponibles (`{show_title}`, `{season_num}`...), modes suma vs reemplaçament i recàrrega en calent.
 * 📊 **[Estadístiques, Informes i Collages Visuals (`docs/ca/ESTADISTIQUES.md`)](docs/ca/ESTADISTIQUES.md):** Calendari de balanços, especificacions d'imatge de Pillow i configuració a OliveTin.
 * 🔌 **[Proveïdors de Seguiment: WeTrakr i SIMKL (`docs/ca/PROVEIDORS.md`)](docs/ca/PROVEIDORS.md):** Obtenció d'API keys, flux d'autorització per codi PIN (`Device Auth`) i renovació automàtica de tokens.
+* 🗺️ **[Full de Ruta del Projecte (`ROADMAP.md`)](ROADMAP.md):** Funcionalitats planificades, control d'errors latents i prioritats de versió.
 
 ---
 

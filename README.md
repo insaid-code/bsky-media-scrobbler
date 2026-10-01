@@ -48,6 +48,7 @@ For in-depth guides, variable references, and configuration walkthroughs:
 * ✍️ **[Custom Phrases & Localization Guide (`docs/en/CUSTOM_PHRASES.md`)](docs/en/CUSTOM_PHRASES.md):** Template variables (`{show_title}`, `{season_num}`...), extension mode vs exclusive override mode, and hot-reload mechanism.
 * 📊 **[Statistics, Balances & Collages (`docs/en/STATISTICS.md`)](docs/en/STATISTICS.md):** Pillow collage dimensions, calculation logic, and OliveTin dashboard setup.
 * 🔌 **[Tracker Providers: WeTrakr & SIMKL (`docs/en/PROVIDERS.md`)](docs/en/PROVIDERS.md):** API key setup, PIN device authorization flows, and automatic token management.
+* 🗺️ **[Project Roadmap (`ROADMAP.md`)](ROADMAP.md):** Planned features, latency bug tracking, and release priorities.
 
 ---
 
