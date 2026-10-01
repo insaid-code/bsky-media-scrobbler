@@ -1,6 +1,7 @@
 import logging
+import re
 import requests
-from atproto import Client, models
+from atproto import Client, client_utils, models
 
 log = logging.getLogger("bsky-media-scrobbler")
 
@@ -34,6 +35,55 @@ class BlueskyPublisher:
         if not self._logged_in:
             self.login()
 
+    @staticmethod
+    def _build_rich_text(text: str) -> client_utils.TextBuilder:
+        """
+        Analiza el texto plano para detectar hashtags (#tag) y URLs (https://...),
+        convirtiéndolos en facetas enriquecidas (RichText Facets) de AT Protocol.
+        Esto permite que los hashtags y enlaces sean interactivos y clicables en Bluesky.
+        """
+        tb = client_utils.TextBuilder()
+        last_idx = 0
+
+        # Patrón para URLs y Hashtags respetando Unicode (acentos, ñ, etc.)
+        token_pattern = re.compile(
+            r'(?P<url>https?://[^\s]+)|'
+            r'(?:^|(?<=[\s\n([{\<\"\'\«]))#(?P<tag>[^\s#.,!?:;()\[\]{}\"\'\«\»]+)'
+        )
+
+        for m in token_pattern.finditer(text):
+            start, end = m.span()
+            if start > last_idx:
+                tb.text(text[last_idx:start])
+
+            if m.group('url'):
+                raw_url = m.group('url')
+                clean_url = raw_url.rstrip('.,!?:;()[]"\'<>«»')
+                trail = raw_url[len(clean_url):]
+                tb.link(clean_url, clean_url)
+                if trail:
+                    tb.text(trail)
+            elif m.group('tag'):
+                raw_tag = m.group('tag')
+                clean_tag = raw_tag.rstrip('.,!?:;()[]"\'<>«»')
+                trail = raw_tag[len(clean_tag):]
+
+                # Validación AT Protocol para tags: entre 1 y 64 caracteres
+                if 0 < len(clean_tag) <= 64:
+                    tb.tag(f"#{clean_tag}", clean_tag)
+                else:
+                    tb.text(f"#{clean_tag}")
+
+                if trail:
+                    tb.text(trail)
+
+            last_idx = end
+
+        if last_idx < len(text):
+            tb.text(text[last_idx:])
+
+        return tb
+
     def post_watch(
         self,
         text: str,
@@ -49,10 +99,15 @@ class BlueskyPublisher:
         o una imagen compuesta adjunta (Image Embed). En DRY-RUN solo simula en log.
         """
         if self.dry_run:
+            tb = self._build_rich_text(text)
+            facets = tb.build_facets()
             log.info("[DRY-RUN] Simulación de Bluit (NO publicado en Bluesky):")
             log.info("-----------------------------------------------------------------")
             for line in text.split("\n"):
                 log.info("  %s", line)
+            if facets:
+                tags = [f.features[0].tag for f in facets if hasattr(f.features[0], "tag")]
+                log.info("[DRY-RUN] Facetas detectadas (%d): %s", len(facets), ", ".join(f"#{t}" for t in tags))
             if link_url:
                 log.info("[DRY-RUN] Ficha externa (Card): %s (Título: %s)", link_url, title)
             if poster_url:
@@ -110,9 +165,10 @@ class BlueskyPublisher:
             log.warning("El texto del post supera los 300 caracteres (%d). Recortando de forma segura...", len(text))
             text = text[:295] + "..."
 
+        rich_text = self._build_rich_text(text)
+
         try:
-            # send_post analiza y añade automáticamente las facetas para hashtags y menciones
-            self.client.send_post(text=text, embed=embed, langs=self.langs)
+            self.client.send_post(text=rich_text, embed=embed, langs=self.langs)
             log.info("Publicación enviada a Bluesky: %s", text.splitlines()[0])
             return True
         except Exception as e:
@@ -120,7 +176,7 @@ class BlueskyPublisher:
             # Reintentar login por si la sesión caducó
             try:
                 self.login()
-                self.client.send_post(text=text, embed=embed, langs=self.langs)
+                self.client.send_post(text=self._build_rich_text(text), embed=embed, langs=self.langs)
                 log.info("Publicación enviada tras reautenticación.")
                 return True
             except Exception as retry_err:
