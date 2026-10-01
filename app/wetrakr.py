@@ -1,4 +1,5 @@
 import logging
+import time
 from datetime import datetime, timezone
 import requests
 
@@ -299,8 +300,15 @@ class WeTrakrClient:
                             "watched_at": p.get("watched_at"),
                         })
 
+                dropped_ids = self.get_dropped_show_ids()
                 res = []
                 for item in shows_map.values():
+                    s_ids = (item.get("show") or {}).get("ids") or {}
+                    s_id = s_ids.get("wetrakr")
+                    tmdb_id = s_ids.get("tmdb")
+                    is_dropped = (s_id in dropped_ids) or (tmdb_id in dropped_ids)
+                    status = "dropped" if is_dropped else "watching"
+
                     seasons_list = []
                     for s_num, eps in item["seasons_dict"].items():
                         seasons_list.append({
@@ -309,6 +317,7 @@ class WeTrakrClient:
                         })
                     res.append({
                         "show": item["show"],
+                        "status": status,
                         "seasons": seasons_list,
                     })
                 return res
@@ -317,15 +326,41 @@ class WeTrakrClient:
             log.warning("No se pudo obtener historial de WeTrakr para %s: %s", media_type, e)
             return []
 
-    def get_show_details(self, show_id: int | str) -> dict:
-        url = f"{API_BASE}/shows/{show_id}"
+    def get_dropped_show_ids(self) -> set:
+        """Obtiene el conjunto de IDs (WeTrakr y TMDB) de series marcadas como dropped."""
+        now = time.time()
+        if not hasattr(self, "_dropped_cache") or (now - getattr(self, "_dropped_cache_time", 0) > 300):
+            self._dropped_cache = set()
+            try:
+                url = f"{API_BASE}/sync/tracking/dropped/shows"
+                resp = self.session.get(url, headers=self._headers(), params={"limit": 100}, timeout=15)
+                if resp.status_code == 401 and self.refresh_token_str:
+                    if self.refresh_access_token():
+                        resp = self.session.get(url, headers=self._headers(), params={"limit": 100}, timeout=15)
+                if resp.status_code == 200:
+                    for s in resp.json():
+                        if s.get("id"):
+                            self._dropped_cache.add(s["id"])
+                            self._dropped_cache.add(str(s["id"]))
+                        tmdb = (s.get("ids") or {}).get("tmdb")
+                        if tmdb:
+                            self._dropped_cache.add(tmdb)
+                            self._dropped_cache.add(str(tmdb))
+            except Exception as e:
+                log.debug("No se pudieron obtener series dropped de WeTrakr: %s", e)
+            self._dropped_cache_time = now
+        return self._dropped_cache
+
+    def get_dropped_shows(self) -> list[dict]:
+        """Devuelve la lista completa de series descartadas (dropped) para futuros análisis."""
         try:
-            resp = self.session.get(url, headers=self._headers(), timeout=15)
+            url = f"{API_BASE}/sync/tracking/dropped/shows"
+            resp = self.session.get(url, headers=self._headers(), params={"limit": 100}, timeout=15)
             if resp.status_code == 200:
                 return resp.json()
         except Exception as e:
-            log.debug("Error al consultar show WeTrakr %s: %s", show_id, e)
-        return {}
+            log.debug("Error al obtener lista de dropped shows: %s", e)
+        return []
 
     def get_user_stats(self) -> dict:
         url = f"{API_BASE}/account/stats/all"

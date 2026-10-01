@@ -347,6 +347,9 @@ class StatsManager:
             exact_watched_mins = 0
 
             for item in shows_items + anime_items:
+                if item.get("status") in ("dropped", "notinteresting", "abandoned"):
+                    log.debug("Ignorando serie descartada (dropped) en balance semanal: %s", (item.get("show") or {}).get("title"))
+                    continue
                 show = item.get("show") or {}
                 show_title = show.get("title") or "Serie"
                 ep_runtime = show.get("runtime") or 35
@@ -509,6 +512,9 @@ class StatsManager:
             completed_shows = []
 
             for item in shows_items + anime_items:
+                if item.get("status") in ("dropped", "notinteresting", "abandoned"):
+                    log.debug("Ignorando serie descartada (dropped) en balance mensual: %s", (item.get("show") or {}).get("title"))
+                    continue
                 show = item.get("show") or {}
                 show_title = show.get("title") or "Serie"
                 ep_runtime = show.get("runtime") or 35
@@ -607,44 +613,41 @@ class StatsManager:
             question = get_engagement_question("monthly", lang=self.lang)
 
             if self.lang == "en":
+                header = f"🗓️ Monthly Media Balance ({month_name} {prev_year})\n\n"
                 movies_line = f"🎬 {movies_count} movie{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
-                text = (
-                    f"🗓️ Monthly Media Balance ({month_name} {prev_year})\n\n"
-                    f"📺 {total_eps} episodes binge-watched\n"
-                    f"{movies_line}"
-                    f"⏱️ {time_str} of screen time dedicated to fiction"
-                    f"{top_show_str}"
-                    f"{completed_str}\n\n"
-                    f"{question}\n"
-                    f"#MonthlyRecap #TVShows #Cinema {self.tracker_tag}"
-                )
+                stats_body = f"📺 {total_eps} episodes binge-watched\n{movies_line}⏱️ {time_str} of screen time dedicated to fiction{top_show_str}"
+                tags = f"#MonthlyRecap #TVShows #Cinema {self.tracker_tag}"
                 alt_text = f"Monthly Collage {month_name} {prev_year}"
             elif self.lang == "ca":
+                header = f"🗓️ Balanç Mensual Serèfil ({month_name} {prev_year})\n\n"
                 movies_line = f"🎬 {movies_count} pel·lícula{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
-                text = (
-                    f"🗓️ Balanç Mensual Serèfil ({month_name} {prev_year})\n\n"
-                    f"📺 {total_eps} episodis devorats\n"
-                    f"{movies_line}"
-                    f"⏱️ {time_str} de pantalla dedicats a la ficció"
-                    f"{top_show_str}"
-                    f"{completed_str}\n\n"
-                    f"{question}\n"
-                    f"#ResumMensual #Series #Cinema {self.tracker_tag}"
-                )
+                stats_body = f"📺 {total_eps} episodis devorats\n{movies_line}⏱️ {time_str} de pantalla dedicats a la ficció{top_show_str}"
+                tags = f"#ResumMensual #Series #Cinema {self.tracker_tag}"
                 alt_text = f"Collage Mensual {month_name} {prev_year}"
             else:
+                header = f"🗓️ Balance Mensual Seriéfilo ({month_name} {prev_year})\n\n"
                 movies_line = f"🎬 {movies_count} película{'s' if movies_count != 1 else ''}\n" if movies_count > 0 else ""
-                text = (
-                    f"🗓️ Balance Mensual Seriéfilo ({month_name} {prev_year})\n\n"
-                    f"📺 {total_eps} episodios devorados\n"
-                    f"{movies_line}"
-                    f"⏱️ {time_str} de pantalla dedicadas a la ficción"
-                    f"{top_show_str}"
-                    f"{completed_str}\n\n"
-                    f"{question}\n"
-                    f"#ResumenMensual #Series #Cine {self.tracker_tag}"
-                )
+                stats_body = f"📺 {total_eps} episodios devorados\n{movies_line}⏱️ {time_str} de pantalla dedicadas a la ficción{top_show_str}"
+                tags = f"#ResumenMensual #Series #Cine {self.tracker_tag}"
                 alt_text = f"Collage Mensual {month_name} {prev_year}"
+
+            # Ensamblado inteligente respetando el límite estricto de 300 caracteres sin truncar hashtags
+            base_part = f"{header}{stats_body}"
+            extra_lines = []
+            if completed_str:
+                extra_lines.append(completed_str.strip())
+            if question:
+                extra_lines.append(question.strip())
+
+            candidate = f"{base_part}\n\n" + "\n\n".join(extra_lines) + f"\n\n{tags}"
+            if len(candidate) <= 300:
+                text = candidate
+            else:
+                candidate_q = f"{base_part}\n\n{question}\n\n{tags}" if question else f"{base_part}\n\n{tags}"
+                if len(candidate_q) <= 300:
+                    text = candidate_q
+                else:
+                    text = f"{base_part}\n\n{tags}"
 
             collage_bytes = None
             if poster_urls:
@@ -691,6 +694,8 @@ class StatsManager:
                     hours = Counter()
 
                     for item in all_shows:
+                        if item.get("status") in ("dropped", "notinteresting", "abandoned"):
+                            continue
                         for season in item.get("seasons", []):
                             for ep in season.get("episodes", []):
                                 w_at = ep.get("watched_at")
@@ -739,7 +744,10 @@ class StatsManager:
             if not text and (topic == 1 or topic == 0):
                 try:
                     completed_shows = self.simkl.get_all_items("shows") or []
-                    c_shows = [s for s in completed_shows if s.get("status") == "completed"]
+                    c_shows = [
+                        s for s in completed_shows
+                        if s.get("status") == "completed" and s.get("status") not in ("dropped", "notinteresting", "abandoned")
+                    ]
                     if c_shows:
                         longest = max(c_shows, key=lambda x: x.get("watched_episodes_count", 0))
                         title = (longest.get("show") or {}).get("title") or "Serie"
