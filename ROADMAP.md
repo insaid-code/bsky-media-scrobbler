@@ -32,7 +32,7 @@ El bot funciona con ciclos de 90 minutos para agrupar maratones. Si terminas de 
 
 ```mermaid
 flowchart TD
-    A["Terminas de ver el capítulo (Sofá / Cama)"] --> B["Entras a OliveTin cmd.insaid.net o envías nota"]
+    A["Terminas de ver el capítulo (Sofá / Cama)"] --> B["Entras a OliveTin / Webhook o envías nota"]
     B --> C["Escribes comentario vinculándolo al show"]
     C --> D["Se persiste en /data/pending_comments.json"]
     E["Ciclo de 90m de bsky-media-scrobbler"] --> F["Publica Card principal en Bluesky"]
@@ -73,8 +73,8 @@ Archivo persistente en `/data/pending_comments.json`:
 * `match_mode: "episode"`: Se vincula exactamente al capítulo indicado. Si se emite un maratón `S02E01-E03`, el comentario de `E01` o `E03` se acopla al post agrupado.
 * `match_mode: "latest_show"`: Comodín rápido: se acopla al próximo post que se publique de esa serie, sin importar el número de capítulo exacto.
 
-### 1.4. Interfaz de Usuario: Integración con OliveTin (`cmd.insaid.net`)
-En OliveTin se crea una acción ligera con dos campos:
+### 1.4. Interfaz de Usuario: Integración con OliveTin / Webhook
+En OliveTin (o interfaz web ligera) se crea una acción con dos campos:
 1. **Serie / Película:** Campo de texto (o desplegable precargado con los últimos 3 visionados vía script rápido).
 2. **Tu comentario:** Área de texto multilínea.
 3. **Casilla opcional:** *«Publicar inmediatamente (forzar sync sin esperar los 90m)»* → si está marcada, tras guardar la nota ejecuta `touch /data/trigger_sync`.
@@ -243,7 +243,7 @@ Aporta frescura al ciclo de curiosidades mensuales (día 15 del mes). El usuario
 ## 7. F-06 — Micro-Endpoint de Salud y Telemetría `/status`
 
 ### 7.1. Justificación
-Permite conocer el estado del scrobbler desde OliveTin, el dashboard Homepage (`links.insaid.net`) o monitores externos sin tener que abrir Dockge ni leer logs de terminal.
+Permite conocer el estado del scrobbler desde OliveTin, dashboards personales (como Homepage) o monitores externos sin tener que abrir Dockge ni leer logs de terminal.
 
 ### 7.2. Arquitectura: Servidor Embebido Ligero
 En lugar de dependencias pesadas, utilizar el servidor HTTP nativo de Python en un hilo secundario (`threading.Thread`) que corre dentro de `main.py`:
