@@ -211,7 +211,7 @@ class WeTrakrClient:
     # -------------------------------------------------------------------------
     # Historial de visionados normalizado
     # -------------------------------------------------------------------------
-    def get_all_items(self, media_type: str, date_from: str | None = None) -> list:
+    def get_all_items(self, media_type: str, date_from: str | None = None, **kwargs) -> list:
         """
         Obtiene el historial de visionados y lo normaliza a la estructura
         esperada por el motor de publicación.
