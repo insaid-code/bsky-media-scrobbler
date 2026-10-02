@@ -351,7 +351,7 @@ class StatsManager:
             start_iso = start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
             if self.provider == "simkl":
-                delta = self.simkl.get_all_items(date_from=start_iso)
+                delta = self.simkl.get_changes(start_iso) if hasattr(self.simkl, "get_changes") else self.simkl.get_all_items(date_from=start_iso)
                 shows_items = delta.get("shows", []) if isinstance(delta, dict) else []
                 anime_items = delta.get("anime", []) if isinstance(delta, dict) else []
                 movie_items = delta.get("movies", []) if isinstance(delta, dict) else []
@@ -521,7 +521,7 @@ class StatsManager:
             start_iso = start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
             if self.provider == "simkl":
-                delta = self.simkl.get_all_items(date_from=start_iso)
+                delta = self.simkl.get_changes(start_iso) if hasattr(self.simkl, "get_changes") else self.simkl.get_all_items(date_from=start_iso)
                 shows_items = delta.get("shows", []) if isinstance(delta, dict) else []
                 anime_items = delta.get("anime", []) if isinstance(delta, dict) else []
                 movie_items = delta.get("movies", []) if isinstance(delta, dict) else []
@@ -701,6 +701,7 @@ class StatsManager:
 
         log.info("Generando Fun Fact seriéfilo para %s...", fact_marker)
         try:
+            now_utc = now.astimezone(timezone.utc) if now.tzinfo else now.replace(tzinfo=timezone.utc)
             topic = now.month % 3
             stats = self.simkl.get_user_stats()
             total_mins = stats.get("total_mins", 800000)
@@ -717,7 +718,8 @@ class StatsManager:
             if topic == 0:
                 try:
                     # Consultar el último año para patrones recientes en lugar de todo el historial histórico
-                    one_year_ago = (now_utc - timedelta(days=365)).strftime("%Y-%m-%dT00:00:00Z")
+                    one_year_ago_dt = now_utc - timedelta(days=365)
+                    one_year_ago = one_year_ago_dt.strftime("%Y-%m-%dT00:00:00Z")
                     all_shows = self.simkl.get_all_items("shows", date_from=one_year_ago) or []
                     weekdays = Counter()
                     hours = Counter()
@@ -730,13 +732,15 @@ class StatsManager:
                                 w_at = ep.get("watched_at")
                                 if w_at:
                                     dt = parse_iso(w_at)
-                                    if dt.tzinfo:
-                                        try:
-                                            dt = dt.astimezone(ZoneInfo(self.tz_name))
-                                        except Exception:
-                                            pass
-                                    weekdays[dt.weekday()] += 1
-                                    hours[dt.hour] += 1
+                                    # Descartar fechas previas al año y el placeholder de 1970
+                                    if dt >= one_year_ago_dt and dt.year > 1970:
+                                        if dt.tzinfo:
+                                            try:
+                                                dt = dt.astimezone(ZoneInfo(self.tz_name))
+                                            except Exception:
+                                                pass
+                                        weekdays[dt.weekday()] += 1
+                                        hours[dt.hour] += 1
 
                     if weekdays:
                         top_wd, _ = weekdays.most_common(1)[0]
@@ -772,14 +776,15 @@ class StatsManager:
             # Tema 1: La serie más larga completada
             if not text and (topic == 1 or topic == 0):
                 try:
-                    # OPT-04: reutilizar all_shows si ya fue cargado en el tema 0
-                    if all_shows is None:
-                        # Para contar episodios de completadas, solo necesitamos los campos resumen (sin array pesado de episodios)
-                        all_shows = self.simkl.get_all_items("shows", extended=None, episode_watched_at=False, next_watch_info=False) or []
-                    c_shows = [
-                        s for s in all_shows
-                        if s.get("status") == "completed"  # BUG-03: condición única y correcta
-                    ]
+                    if hasattr(self.simkl, "get_completed_shows"):
+                        c_shows = self.simkl.get_completed_shows() or []
+                    else:
+                        if all_shows is None:
+                            all_shows = self.simkl.get_all_items("shows", extended=None, episode_watched_at=False, next_watch_info=False) or []
+                        c_shows = [
+                            s for s in all_shows
+                            if s.get("status") == "completed"
+                        ]
                     if c_shows:
                         longest = max(c_shows, key=lambda x: x.get("watched_episodes_count", 0))
                         title = (longest.get("show") or {}).get("title") or "Serie"

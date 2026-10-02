@@ -10,16 +10,28 @@ APP_NAME = "bsky-media-scrobbler"
 APP_VERSION = "1.0.1"
 USER_AGENT = f"{APP_NAME}/{APP_VERSION}"
 
-# Límite de tamaño para las cachés globales de metadatos (Q-02: evitar memory leak)
+# Límite de tamaño y TTL para las cachés globales de metadatos (evitar memory leak y datos desactualizados)
 _CACHE_MAX_SIZE = 200
+_CACHE_TTL_SECONDS = 6 * 3600  # 6 horas de validez para series en emisión
+
+
+def _cache_get(cache: dict, key):
+    """Obtiene un valor de la caché si no ha expirado su TTL."""
+    entry = cache.get(key)
+    if entry:
+        ts, val = entry
+        if time.time() - ts < _CACHE_TTL_SECONDS:
+            return val
+        del cache[key]
+    return None
 
 
 def _cache_set(cache: dict, key, value) -> None:
-    """Inserta en caché respetando el tamaño máximo (elimina la entrada más antigua si se supera)."""
+    """Inserta en caché con timestamp respetando el tamaño máximo."""
     if len(cache) >= _CACHE_MAX_SIZE:
         oldest_key = next(iter(cache))
         del cache[oldest_key]
-    cache[key] = value
+    cache[key] = (time.time(), value)
 
 
 def parse_iso(value: str | None) -> datetime:
@@ -181,6 +193,7 @@ class SimklClient:
         if media_type != "movies":
             if episode_watched_at and extended == "full":
                 extra_params["episode_watched_at"] = "yes"
+                extra_params["include_all_episodes"] = "original"
             if next_watch_info:
                 extra_params["next_watch_info"] = "yes"
 
@@ -200,6 +213,26 @@ class SimklClient:
         if isinstance(data, dict):
             return data
         return {}
+
+    def get_changes(self, date_from: str) -> dict:
+        """Endpoint delta unificado oficial de SIMKL (shows, anime y movies en 1 llamada)."""
+        params = self._params(
+            extended="full",
+            episode_watched_at="yes",
+            include_all_episodes="original",
+            date_from=date_from,
+        )
+        resp = self._get(f"{API_BASE}/sync/all-items", params=params, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        return data if isinstance(data, dict) else {}
+
+    def get_completed_shows(self) -> list:
+        """Obtiene el listado ligero de series completadas sin array de episodios."""
+        resp = self._get(f"{API_BASE}/sync/all-items/shows/completed", params=self._params(), timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get("shows", []) if isinstance(data, dict) else []
 
     def get_user_stats(self, user_id: str | int | None = None) -> dict:
         """Obtiene las estadísticas globales de visionado del usuario desde SIMKL."""
@@ -283,8 +316,9 @@ SHOW_DETAILS_CACHE = {}
 def get_show_episodes(simkl_id: int | str, client_id: str) -> list[dict]:
     """Obtiene y cachea la lista completa de episodios de una serie desde SIMKL."""
     simkl_id_int = int(simkl_id) if str(simkl_id).isdigit() else simkl_id
-    if simkl_id_int in SHOW_EPISODES_CACHE:
-        return SHOW_EPISODES_CACHE[simkl_id_int]
+    cached = _cache_get(SHOW_EPISODES_CACHE, simkl_id_int)
+    if cached is not None:
+        return cached
     try:
         resp = requests.get(
             f"{API_BASE}/tv/episodes/{simkl_id_int}",
@@ -305,8 +339,9 @@ def get_show_episodes(simkl_id: int | str, client_id: str) -> list[dict]:
 def get_show_details(simkl_id: int | str, client_id: str) -> dict:
     """Obtiene y cachea los detalles y estado (airing, ended, etc.) de una serie desde SIMKL."""
     simkl_id_int = int(simkl_id) if str(simkl_id).isdigit() else simkl_id
-    if simkl_id_int in SHOW_DETAILS_CACHE:
-        return SHOW_DETAILS_CACHE[simkl_id_int]
+    cached = _cache_get(SHOW_DETAILS_CACHE, simkl_id_int)
+    if cached is not None:
+        return cached
     try:
         resp = requests.get(
             f"{API_BASE}/tv/{simkl_id_int}",
