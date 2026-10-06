@@ -24,6 +24,7 @@ Bot autónomo en Python para Docker que monitoriza tu actividad en tus plataform
 * 🔌 **Multi-Tracker Universal:** Soporte nativo para **WeTrakr** y **SIMKL** seleccionable mediante variable de entorno (`TRACKER_PROVIDER`).
 * 📦 **Agrupación Inteligente de Maratones:** Si ves varios capítulos consecutivos (ej. `T01E01–E03`), los agrupa en un único post limpio para no saturar tu timeline.
 * 🎬 **Fichas Enriquecidas (TMDB):** Tarjetas interactivas externas hacia The Movie Database con carátula oficial en alta definición.
+* 🌐 **Traducción Oficial de Títulos (TheTVDB v4):** Resolución de nombres de series y películas al castellano (para `BSKY_LANG=es` y `BSKY_LANG=ca`) mediante la API v4 de TheTVDB. Genera hashtags coherentes en español (ej. `#RanchoDutton`) y persiste las consultas en disco (0 ms tras el primer descubrimiento).
 * ✍️ **Motor de Frases y Multi-idioma (i18n):**
   * Más de 220 frases oficiales clasificadas por franjas horarias, días de la semana, volumen de sesión, finales de temporada e hitos de trama.
   * Soporte nativo multilingüe: **Español (`es`)**, **Inglés (`en`)** y **Catalán (`ca`)** mediante `BSKY_LANG`.

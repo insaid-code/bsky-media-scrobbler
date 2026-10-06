@@ -15,6 +15,7 @@ Aquest document detalla totes les variables d'entorn, opcions de personalitzaci�
 | `WETRAKR_ACCESS_TOKEN` | Text | *(opcional)* | Token d'accés OAuth de WeTrakr. Si s'omet, s'inicia el flux interactiu per codi PIN (`Device Auth`). |
 | `SIMKL_CLIENT_ID` | Text | — | Client ID de l'aplicació creada a SIMKL Developers. Requerit si `TRACKER_PROVIDER=simkl`. |
 | `SIMKL_USER_TOKEN` | Text | *(opcional)* | Token d'accés de l'usuari a SIMKL. Si s'omet, el bot iniciarà el flux interactiu d'autorització per codi PIN (`Device Auth`). |
+| `TVDB_API_KEY` | Text | *(opcional)* | Clau d'API v4 de TheTVDB per traduir automàticament els noms de sèries i pel·lícules al castellà (`BSKY_LANG=ca`/`es`) i generar hashtags traduïts. Si s'omet, es publiquen amb el nom original en anglès sense fallades. |
 | `BSKY_HANDLE` | Text | — | Identificador del teu compte a Bluesky (ex. `el-teu-compte.bsky.social`). |
 | `BSKY_APP_PASSWORD` | Text | — | Contrasenya d'aplicació generada a Bluesky (*Ajustos ➜ Privadesa i seguretat ➜ Contrasenyes d'aplicació*). No facis servir mai la teva contrasenya principal. |
 | `BSKY_LANG` | Text | `ca` | Codi d'idioma per a les publicacions (ex. `ca`, `es`, `en`). Aplica l'etiqueta AT-Protocol `langs` i selecciona el fitxer base de frases (`locales/ca.json`). |
@@ -62,6 +63,7 @@ services:
       - TRACKER_PROVIDER=${TRACKER_PROVIDER:-simkl}
       - SIMKL_CLIENT_ID=${SIMKL_CLIENT_ID}
       - SIMKL_USER_TOKEN=${SIMKL_USER_TOKEN}
+      - TVDB_API_KEY=${TVDB_API_KEY:-}
       - WETRAKR_CLIENT_ID=${WETRAKR_CLIENT_ID}
       - WETRAKR_CLIENT_SECRET=${WETRAKR_CLIENT_SECRET}
       - BSKY_HANDLE=${BSKY_HANDLE}

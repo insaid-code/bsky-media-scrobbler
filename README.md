@@ -24,6 +24,7 @@ An autonomous Python container for Docker that monitors your media activity on y
 * 🔌 **Universal Multi-Tracker:** Native support for **WeTrakr** and **SIMKL** via the `TRACKER_PROVIDER` environment variable.
 * 📦 **Smart Binge Grouping:** Automatically groups back-to-back episodes (e.g., `S01E01–E03`) into a single post to keep your Bluesky timeline uncluttered.
 * 🎬 **Enriched Cards (TMDB):** Generates interactive external cards directed to The Movie Database with high-resolution poster artwork.
+* 🌐 **Official Title Localization (TheTVDB v4):** Automatically resolves TV show and movie titles into Spanish (`BSKY_LANG=es`/`ca`) via TheTVDB API v4. Generates matching localized hashtags (e.g., `#RanchoDutton`) with local disk caching to prevent duplicate API hits (0 ms after first discovery).
 * ✍️ **Dynamic Phrasing & Native Multi-Language (i18n):**
   * Over 220 official phrases categorized by time of day, day of the week, binge volume, season finales, and plot milestones.
   * Native multi-language support: **English (`en`)**, **Spanish (`es`)**, and **Catalan (`ca`)** via `BSKY_LANG`.

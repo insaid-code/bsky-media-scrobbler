@@ -7,7 +7,7 @@ log = logging.getLogger("bsky-media-scrobbler")
 
 API_BASE = "https://api.simkl.com"
 APP_NAME = "bsky-media-scrobbler"
-APP_VERSION = "1.0.1"
+APP_VERSION = "1.1.0"
 USER_AGENT = f"{APP_NAME}/{APP_VERSION}"
 
 # Límite de tamaño y TTL para las cachés globales de metadatos (evitar memory leak y datos desactualizados)

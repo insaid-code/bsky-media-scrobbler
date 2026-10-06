@@ -15,6 +15,7 @@ This document details all environment variables, customization options, and depl
 | `WETRAKR_ACCESS_TOKEN` | String | *(optional)* | WeTrakr OAuth access token. If omitted, interactive PIN device authorization flow starts (`Device Auth`). |
 | `SIMKL_CLIENT_ID` | String | — | Client ID from SIMKL Developers. Required if `TRACKER_PROVIDER=simkl`. |
 | `SIMKL_USER_TOKEN` | String | *(optional)* | SIMKL user access token. If omitted, the bot starts an interactive PIN code authorization flow (`Device Auth`). |
+| `TVDB_API_KEY` | String | *(optional)* | TheTVDB v4 API Key to automatically translate show and movie titles into Spanish (`BSKY_LANG=es`/`ca`) and produce localized hashtags. If omitted, original international titles are used. |
 | `BSKY_HANDLE` | String | — | Your Bluesky handle (e.g., `my-account.bsky.social`). |
 | `BSKY_APP_PASSWORD` | String | — | Bluesky App Password generated from *Settings ➜ Privacy and Security ➜ App Passwords*. Never use your primary account password. |
 | `BSKY_LANG` | String | `en` | Post language tag (e.g., `en`, `es`, `ca`). Sets the AT-Protocol `langs` metadata and selects the base phrasing pack (`locales/{lang}.json`). |
@@ -62,6 +63,7 @@ services:
       - TRACKER_PROVIDER=${TRACKER_PROVIDER:-simkl}
       - SIMKL_CLIENT_ID=${SIMKL_CLIENT_ID}
       - SIMKL_USER_TOKEN=${SIMKL_USER_TOKEN}
+      - TVDB_API_KEY=${TVDB_API_KEY:-}
       - WETRAKR_CLIENT_ID=${WETRAKR_CLIENT_ID}
       - WETRAKR_CLIENT_SECRET=${WETRAKR_CLIENT_SECRET}
       - BSKY_HANDLE=${BSKY_HANDLE}

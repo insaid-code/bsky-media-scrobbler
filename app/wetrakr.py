@@ -7,7 +7,7 @@ log = logging.getLogger("bsky-media-scrobbler")
 
 API_BASE = "https://api.wetrakr.com"
 APP_NAME = "bsky-media-scrobbler"
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.0"
 USER_AGENT = f"{APP_NAME}/{APP_VERSION}"
 
 
@@ -253,6 +253,7 @@ class WeTrakrClient:
                                 "simkl": ids.get("tmdb") or m_id,
                                 "tmdb": ids.get("tmdb"),
                                 "imdb": ids.get("imdb"),
+                                "tvdb": ids.get("tvdb"),
                                 "wetrakr": m_id,
                             },
                             "poster": mov.get("poster_path"),
@@ -284,6 +285,7 @@ class WeTrakrClient:
                                     "simkl": s_ids.get("tmdb") or s_id,
                                     "tmdb": s_ids.get("tmdb"),
                                     "imdb": s_ids.get("imdb"),
+                                    "tvdb": s_ids.get("tvdb"),
                                     "wetrakr": s_id,
                                 },
                                 "poster": show_poster,

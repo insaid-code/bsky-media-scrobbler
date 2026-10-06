@@ -22,6 +22,8 @@ from simkl import (
 )
 from stats import StatsManager
 from storage import Storage, now_iso
+from tvdb import TVDBClient
+from localization import TitleResolver
 from wetrakr import WeTrakrClient
 
 logging.basicConfig(
@@ -45,6 +47,9 @@ WETRAKR_ACCESS_TOKEN = os.getenv("WETRAKR_ACCESS_TOKEN")
 # SIMKL
 SIMKL_CLIENT_ID = os.getenv("SIMKL_CLIENT_ID")
 SIMKL_USER_TOKEN = os.getenv("SIMKL_USER_TOKEN")
+
+# TheTVDB (traducción de títulos en español para BSKY_LANG=es/ca)
+TVDB_API_KEY = os.getenv("TVDB_API_KEY", "").strip()
 
 # Bluesky
 BSKY_HANDLE = os.getenv("BSKY_HANDLE")
@@ -179,6 +184,7 @@ def process_movies(
     provider: str = "simkl",
     tracker_client=None,
     max_posts: int = 6,
+    title_resolver: TitleResolver | None = None,
 ) -> tuple[int, bool, bool]:
     announced = storage.get_announced()
     new_keys = []
@@ -213,7 +219,12 @@ def process_movies(
             has_more = True
             break
 
-        title = movie.get("title", "Película")
+        raw_title = movie.get("title", "Película")
+        title = (
+            title_resolver.resolve("movies", movie, raw_title)
+            if title_resolver
+            else raw_title
+        )
         year = movie.get("year")
         year_str = f" ({year})" if year else ""
         user_rating = item.get("user_rating")
@@ -288,6 +299,7 @@ def process_shows(
     provider: str = "simkl",
     tracker_client=None,
     max_posts: int = 6,
+    title_resolver: TitleResolver | None = None,
 ) -> tuple[int, bool, bool]:
     announced = storage.get_announced()
     new_keys = []
@@ -302,7 +314,12 @@ def process_shows(
         if item_id is None:
             continue
 
-        show_title = show.get("title", "Serie")
+        raw_show_title = show.get("title", "Serie")
+        show_title = (
+            title_resolver.resolve(media_type, show, raw_show_title)
+            if title_resolver
+            else raw_show_title
+        )
         tag = clean_hashtag(show_title)
         category_tag = "#Anime" if media_type == "anime" else "#Series"
 
@@ -663,6 +680,19 @@ def main():
         lang=BSKY_LANG,
     )
 
+    tvdb_client = TVDBClient(api_key=TVDB_API_KEY) if TVDB_API_KEY else None
+    title_resolver = TitleResolver(
+        storage=storage,
+        tvdb_client=tvdb_client,
+        lang=BSKY_LANG,
+    )
+    if TVDB_API_KEY:
+        log.info("🌐 Módulo de localización TheTVDB v4 habilitado (idioma: %s).", BSKY_LANG)
+    elif BSKY_LANG in ("es", "ca"):
+        log.warning("⚠️ TVDB_API_KEY no configurada. Los nombres de series y películas se publicarán en versión original sin traducir.")
+    else:
+        log.debug("TheTVDB no requerido para idioma '%s'.", BSKY_LANG)
+
     # Siembra inicial / Bootstrap si es la primera vez
     if TRACKER_PROVIDER == "simkl":
         init_simkl_watermark(tracker_client, storage)
@@ -691,11 +721,11 @@ def main():
                         items = delta.get(media_type) or []
                         if media_type == "movies":
                             posted, m, f = process_movies(
-                                items, storage, bsky, since=since, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                                items, storage, bsky, since=since, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget, title_resolver=title_resolver
                             )
                         else:
                             posted, m, f = process_shows(
-                                media_type, items, storage, bsky, since=since, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                                media_type, items, storage, bsky, since=since, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget, title_resolver=title_resolver
                             )
                         post_budget -= posted
                         more = more or m
@@ -729,11 +759,11 @@ def main():
                             items = delta.get(media_type) or []
                             if media_type == "movies":
                                 posted, m, f = process_movies(
-                                    items, storage, bsky, since=since, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                                    items, storage, bsky, since=since, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget, title_resolver=title_resolver
                                 )
                             else:
                                 posted, m, f = process_shows(
-                                    media_type, items, storage, bsky, since=since, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                                    media_type, items, storage, bsky, since=since, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget, title_resolver=title_resolver
                                 )
                             post_budget -= posted
                             more = more or m
@@ -774,11 +804,11 @@ def main():
 
                         if media_type == "movies":
                             posted, more, failed = process_movies(
-                                items, storage, bsky, since=since_dt, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                                items, storage, bsky, since=since_dt, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget, title_resolver=title_resolver
                             )
                         else:
                             posted, more, failed = process_shows(
-                                media_type, items, storage, bsky, since=since_dt, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget
+                                media_type, items, storage, bsky, since=since_dt, provider=TRACKER_PROVIDER, tracker_client=tracker_client, max_posts=post_budget, title_resolver=title_resolver
                             )
 
                         post_budget -= posted

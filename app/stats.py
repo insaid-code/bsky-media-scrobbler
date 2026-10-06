@@ -118,6 +118,18 @@ class StatsManager:
         except Exception:
             return datetime.now()
 
+    def _get_localized_show_title(self, show: dict) -> str:
+        """Obtiene el título localizado en español desde la caché de almacenamiento si existe."""
+        raw_title = show.get("title") or "Serie"
+        if self.lang in ("es", "ca") and hasattr(self.storage, "get_localized_title"):
+            ids = show.get("ids") or {}
+            item_id = ids.get("simkl") or ids.get("wetrakr") or ids.get("tmdb")
+            tvdb_id = ids.get("tvdb")
+            cached = self.storage.get_localized_title("shows", item_id, tvdb_id=tvdb_id, lang="es")
+            if cached:
+                return cached
+        return raw_title
+
     def check_all(self, activities: dict | None = None):
         """Punto de entrada periódico para comprobar informes, rachas e hitos."""
         now = self._now()
@@ -370,7 +382,7 @@ class StatsManager:
                     log.debug("Ignorando serie descartada (dropped) en balance semanal: %s", (item.get("show") or {}).get("title"))
                     continue
                 show = item.get("show") or {}
-                show_title = show.get("title") or "Serie"
+                show_title = self._get_localized_show_title(show)
                 ep_runtime = show.get("runtime") or 35
                 eps_in_item = 0
                 for season in item.get("seasons", []):
@@ -541,7 +553,7 @@ class StatsManager:
                     log.debug("Ignorando serie descartada (dropped) en balance mensual: %s", (item.get("show") or {}).get("title"))
                     continue
                 show = item.get("show") or {}
-                show_title = show.get("title") or "Serie"
+                show_title = self._get_localized_show_title(show)
                 ep_runtime = show.get("runtime") or 35
                 eps_in_item = 0
                 for season in item.get("seasons", []):
@@ -787,7 +799,7 @@ class StatsManager:
                         ]
                     if c_shows:
                         longest = max(c_shows, key=lambda x: x.get("watched_episodes_count", 0))
-                        title = (longest.get("show") or {}).get("title") or "Serie"
+                        title = self._get_localized_show_title(longest.get("show") or {})
                         ep_count = longest.get("watched_episodes_count", 0)
 
                         if self.lang == "en":

@@ -74,6 +74,7 @@ class Storage:
                             "max_streak": 0,
                             "celebrated_streaks": [],
                         })
+                        data.setdefault("localized_titles", {})
                         return data
             except Exception as e:
                 log.error("Error al cargar %s: %s. Creando estado inicial.", self.file_path, e)
@@ -98,6 +99,7 @@ class Storage:
                 "max_streak": 0,
                 "celebrated_streaks": [],
             },
+            "localized_titles": {},
         }
 
     def save(self):
@@ -334,4 +336,42 @@ class Storage:
 
         self.save()
         return current_streak, is_new_milestone
+
+    def get_localized_title(
+        self,
+        media_type: str,
+        item_id: str | int | None,
+        tvdb_id: str | int | None = None,
+        lang: str = "es",
+    ) -> str | None:
+        """Recupera el título localizado desde la caché de disco si ya fue resuelto previamente."""
+        localized = self.data.get("localized_titles", {})
+        if item_id:
+            k1 = f"{media_type}:{item_id}:{lang}"
+            if k1 in localized:
+                return localized[k1]
+        if tvdb_id:
+            k2 = f"tvdb:{tvdb_id}:{lang}"
+            if k2 in localized:
+                return localized[k2]
+        return None
+
+    def set_localized_title(
+        self,
+        media_type: str,
+        item_id: str | int | None,
+        title: str,
+        tvdb_id: str | int | None = None,
+        lang: str = "es",
+    ):
+        """Guarda el título localizado en la caché persistente para no volver a consultar nunca esa obra."""
+        if "localized_titles" not in self.data:
+            self.data["localized_titles"] = {}
+        if item_id:
+            k1 = f"{media_type}:{item_id}:{lang}"
+            self.data["localized_titles"][k1] = title
+        if tvdb_id:
+            k2 = f"tvdb:{tvdb_id}:{lang}"
+            self.data["localized_titles"][k2] = title
+        self.save()
 

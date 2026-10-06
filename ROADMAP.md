@@ -1,7 +1,7 @@
 # 🗺️ Roadmap y Especificación Técnica — `bsky-media-scrobbler`
 
 > **Documento de Arquitectura y Especificación de Desarrollo**  
-> **Versión base:** `v1.0.0` (Commit `5359396`) · **Última revisión:** 1 de octubre de 2026  
+> **Versión base:** `v1.1.0` · **Última revisión:** 6 de octubre de 2026  
 > Este documento contiene los contratos de datos, algoritmos, casos borde y guías paso a paso para que cualquier desarrollo futuro se implemente con precisión sin ambigüedades.
 
 ---
@@ -15,8 +15,10 @@
 5. [Detección y Publicación de Valoración Explícita (F-03)](#5-f-03--publicación-de-valoración-explícita-a-posteriori)
 6. [Fun Fact: El Cementerio de Series Dropped (F-04)](#6-f-04--fun-fact-el-cementerio-de-series-dropped)
 7. [Micro-Endpoint de Salud y Telemetría `/status` (F-06)](#7-f-06--micro-endpoint-de-salud-y-telemetría-status)
-8. [Correcciones de Robustez Menores (PC-03, PC-04, PC-05)](#8-correcciones-de-robustez-menores)
-9. [Matriz de Prioridades y Dependencias](#9-matriz-de-prioridades-y-dependencias)
+8. [Localización de Títulos con TheTVDB v4 (F-08)](#8-f-08--localización-oficial-de-títulos-con-thetvdb-v4)
+9. [Modo Casi Tiempo Real y Ventana Adaptativa de Maratón (F-09)](#9-f-09--modo-casi-tiempo-real-y-ventana-adaptativa-de-maratón)
+10. [Correcciones de Robustez Menores (PC-03, PC-04, PC-05)](#10-correcciones-de-robustez-menores)
+11. [Matriz de Prioridades y Dependencias](#11-matriz-de-prioridades-y-dependencias)
 
 ---
 
@@ -275,28 +277,71 @@ class StatusHandler(BaseHTTPRequestHandler):
 
 ## 8. Correcciones de Robustez Menores
 
-### 8.1. PC-03 🟢 — Deduplicación cruzada Anime / Series en SIMKL (Implementado)
+## 8. F-08 — Localización Oficial de Títulos con TheTVDB v4 (🟢 Implementado en `v1.1.0`)
+
+### 8.1. Contexto y Necesidad
+Tanto SIMKL como WeTrakr devuelven por defecto títulos canónicos en inglés o versión original internacional (`Yellowstone: Dutton Ranch`, `Buffy the Vampire Slayer`), sin soporte para parámetros de localización idiomática en sus APIs de sincronización. Para usuarios de habla hispana o catalana (`BSKY_LANG=es` / `ca`), esto provocaba que las frases del post estuviesen traducidas pero los nombres de las obras y sus hashtags figurasen en inglés.
+
+### 8.2. Arquitectura Implementada
+* **Cliente TheTVDB v4 (`tvdb.py`):**
+  * Autenticación contra `POST https://api4.thetvdb.com/v4/login` con `TVDB_API_KEY`.
+  * Generación y refresco automático de token Bearer JWT (válido por 30 días, renovado automáticamente a los 25 días o ante error 401).
+  * Consulta de traducciones oficiales en español (`spa`):
+    * Series y Anime: `GET /series/{tvdb_id}/translations/spa`
+    * Películas: `GET /movies/{tvdb_id}/translations/spa`
+  * Resolución inversa por `remoteId` (`GET /search/remoteid/{remoteId}`) para casos con solo ID de IMDb (`tt...`).
+* **Reglas de Idioma (`localization.py`):**
+  * `es` y `ca`: resuelven siempre a título oficial en castellano (`spa`).
+  * `en`: conserva el título original sin realizar llamadas de red (coste 0).
+* **Caché Persistente en Disco (`Storage` / `state.json`):**
+  * Cada obra resuelta (tanto si tiene traducción como si hace fallback al original) se guarda en `localized_titles`.
+  * **Coste de red:** Exactamente 1 llamada en toda la vida útil de cada serie. Las reproducciones futuras se sirven en 0 ms.
+* **Hashtags Traducidos:**
+  * El hashtag temático se genera dinámicamente con `clean_hashtag(localized_title)` (ej. `#RanchoDutton`), manteniendo coherencia visual total con el texto del post.
+
+---
+
+## 9. F-09 — Modo Casi Tiempo Real y Ventana Adaptativa de Maratón
+
+### 9.1. Problema Operativo
+Actualmente, `POLL_INTERVAL_MINUTES` cuenta con un suelo mínimo de seguridad de 15 minutos (`max(..., 15)`). Si un usuario desea publicaciones prácticamente inmediatas al finalizar una reproducción en Plex/Kodi (tiempo real), debe poder configurar intervalos reducidos (ej. 2 o 5 minutos).
+Sin embargo, un intervalo muy corto fragmenta la agrupación de maratones: si se ven 3 capítulos seguidos, el bot publicará 3 posts individuales en vez de 1 post agrupado (`S01E01–E03`).
+
+### 9.2. Solución Planificada
+1. **Reducción del suelo de seguridad:** Permitir en `main.py` valores de `POLL_INTERVAL_MINUTES` de hasta 1 o 2 minutos sin romper el contenedor ni saturar las APIs.
+2. **Ventana de Gracia Adaptativa (Binge Buffer):**
+   * Configuración `BINGE_BUFFER_MINUTES` (opcional, ej. `10`): cuando se detecta un episodio visto nuevo, el bot no publica de inmediato sino que espera un breve margen de gracia antes de postear, por si el usuario encadena el siguiente capítulo.
+3. **Modo Toggle `REALTIME_MODE=true`:**
+   * Si está activo, prioriza inmediatez absoluta (1 post por capítulo tan pronto como se registre).
+
+---
+
+## 10. Correcciones de Robustez Menores (PC-03, PC-04, PC-05)
+
+### 10.1. PC-03 🟢 — Deduplicación cruzada Anime / Series en SIMKL (Implementado)
 * **Problema:** Un anime puede retornar en `get_all_items("shows")` y en `get_all_items("anime")`. Como la clave incluía el prefijo (`shows:ID:S:E` vs `anime:ID:S:E`), se duplicaba el post.
 * **Solución Implementada:** En `Storage.get_announced()` y `Storage.add_announced()`, se expanden y registran automáticamente ambas variantes cruzadas (`shows:` y `anime:`), manteniendo 100% de retrocompatibilidad con el historial previo y blindando contra duplicados.
 
-### 8.2. PC-04 — Rotación Justa de Fun Facts
+### 10.2. PC-04 — Rotación Justa de Fun Facts
 * **Problema:** `now.month % 3` hace que Octubre siempre sea el Tema 1, Noviembre el Tema 2, etc.
 * **Fix:** Guardar en `state.json` el índice del último tema publicado (`last_fun_fact_topic: int`). En cada ejecución, seleccionar `(last_fun_fact_topic + 1) % TOTAL_TOPICS`.
 
-### 8.3. PC-05 — Alerta Pushover de Token Expirado
+### 10.3. PC-05 — Alerta Pushover de Token Expirado
 * **Problema:** Si el `refresh_token` queda revocado, el bot entra en bucle de error sin avisar.
 * **Fix:** Si `refresh_access_token()` retorna `False` y se agotan los reintentos, registrar error crítico y llamar al servicio de alertas configurado en el entorno.
 
 ---
 
-## 9. Matriz de Prioridades y Dependencias
+## 11. Matriz de Prioridades y Dependencias
 
 ```mermaid
 graph TD
     PC01["PC-01: Two-Phase Anti-Doble Post ✅"] --> F07["F-07: Hilos de Comentarios Diferidos"]
     PC02["PC-02: Rate Limiter (Protección Backlog) ✅"] --> F07
+    F08["F-08: Localización TheTVDB v4 ✅"]
     F07 --> F03["F-03: Valoraciones Tardías"]
     F01["F-01: Balance Anual 3x3"]
+    F09["F-09: Modo Casi Tiempo Real"]
     F04["F-04: Fun Fact Dropped"]
     F06["F-06: Endpoint /status"]
 ```
@@ -306,12 +351,14 @@ graph TD
 | **PC-01: Transacción Anti-Doble Post** | 🛡️ Estabilidad crítica | Media | `storage.py`, `main.py` | 🟢 Implementado (`v1.0.1`) |
 | **PC-02: Rate Limiter & Flood Protect** | 🛡️ Estabilidad crítica | Media | `storage.py`, `main.py` | 🟢 Implementado (`v1.0.1`) |
 | **PC-03: Deduplicación Anime/Series** | 🛡️ Corrección de bug | Baja | `storage.py` | 🟢 Implementado (`v1.0.1`) |
-| **F-01: Resumen Anual** | ⭐ Alto (Social) | Baja-Media | `stats.py`, `collage.py` | 🟡 Planificado `v1.1` |
-| **PC-04 / 05: Robustez alertas/rotación** | 🛡️ Mantenimiento | Baja | `simkl.py`, `stats.py` | 🟡 Planificado `v1.1` |
+| **F-08: Localización TheTVDB v4** | 🌐 UX / Idioma | Media | `tvdb.py`, `localization.py`, `main.py` | 🟢 Implementado (`v1.1.0`) |
+| **F-09: Modo Casi Tiempo Real** | ⚡ Flexibilidad | Baja | `main.py` | 🟡 Planificado `v1.2` |
+| **F-01: Resumen Anual** | ⭐ Alto (Social) | Baja-Media | `stats.py`, `collage.py` | 🟡 Planificado `v1.2` |
+| **PC-04 / 05: Robustez alertas/rotación** | 🛡️ Mantenimiento | Baja | `simkl.py`, `stats.py` | 🟡 Planificado `v1.2` |
 | **F-07: Comentarios Diferidos** | ⭐ Alto (UX nocturna) | Media | `bsky.py`, `main.py` | 🟡 En reposo |
-| **F-03: Valoraciones Tardías** | 📈 Engagement | Media | `storage.py`, `main.py` | 🟡 Planificado `v1.2` |
-| **F-04: Cementerio Dropped** | 💡 Curiosidad | Baja | `stats.py` | 🟡 Planificado `v1.2` |
-| **F-06: Endpoint `/status`** | ⚙️ Observabilidad | Baja | `main.py` | 🟡 Planificado `v1.2` |
+| **F-03: Valoraciones Tardías** | 📈 Engagement | Media | `storage.py`, `main.py` | 🟡 Planificado `v1.3` |
+| **F-04: Cementerio Dropped** | 💡 Curiosidad | Baja | `stats.py` | 🟡 Planificado `v1.3` |
+| **F-06: Endpoint `/status`** | ⚙️ Observabilidad | Baja | `main.py` | 🟡 Planificado `v1.3` |
 
 ---
 
